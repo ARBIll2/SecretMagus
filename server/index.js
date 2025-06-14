@@ -18,6 +18,10 @@ const io = new Server(server, {
   },
 });
 
+function logEvent(roomCode, event, details = '') {
+  console.log(`[${roomCode}] ${event}`, details);
+}
+
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
@@ -45,9 +49,11 @@ io.on('connection', (socket) => {
       return;
     }
     gameEngine.startGame(room);
+    logEvent(roomCode, 'GAME_START');
     io.to(roomCode).emit(MESSAGE_TYPES.GAME_START, room.game);
+    const knowledge = gameEngine.getInitialKnowledge(room.game);
     room.players.forEach((p) => {
-      io.to(p.id).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, { role: p.role });
+      io.to(p.id).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, knowledge[p.id]);
     });
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
@@ -60,6 +66,7 @@ io.on('connection', (socket) => {
     }
     const success = gameEngine.nominateChancellor(room, socket.id, nomineeId);
     if (success) {
+      logEvent(roomCode, 'NOMINATION', `${socket.id} -> ${nomineeId}`);
       io.to(roomCode).emit(MESSAGE_TYPES.VOTE_REQUEST, {
         presidentId: socket.id,
         nomineeId,
@@ -76,6 +83,7 @@ io.on('connection', (socket) => {
     }
     const result = gameEngine.handleVote(room, socket.id, vote);
     if (result && result.completed) {
+      logEvent(roomCode, 'VOTE_RESULT', result.passed ? 'passed' : 'failed');
       io.to(roomCode).emit(MESSAGE_TYPES.VOTE_RESULT, {
         passed: result.passed,
         votes: result.votes,
@@ -130,6 +138,7 @@ io.on('connection', (socket) => {
         }
       }
       if (outcome.enacted) {
+        logEvent(roomCode, 'POLICY_ENACTED', outcome.result.enactedPolicies);
         io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.result);
         if (outcome.result.gameOver) {
           io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.result.gameOver);
@@ -156,6 +165,7 @@ io.on('connection', (socket) => {
     const outcome = gameEngine.handleVetoDecision(room, socket.id, accept);
     if (outcome) {
       io.to(roomCode).emit(MESSAGE_TYPES.VETO_RESULT, { accepted: outcome.accepted });
+      logEvent(roomCode, 'VETO_DECISION', outcome.accepted ? 'accepted' : 'rejected');
       if (outcome.promptPlayerId) {
         io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
           policies: outcome.policies,
@@ -163,6 +173,7 @@ io.on('connection', (socket) => {
         });
       }
       if (outcome.autoResult) {
+        logEvent(roomCode, 'POLICY_ENACTED', outcome.autoResult.enactedPolicies);
         io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.autoResult);
         if (outcome.autoResult.gameOver) {
           io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
@@ -188,6 +199,7 @@ io.on('connection', (socket) => {
     }
     const result = gameEngine.handlePower(room, socket.id, action);
     if (result) {
+      logEvent(roomCode, 'POWER', result.power);
       if (result.broadcast) {
         io.to(roomCode).emit(MESSAGE_TYPES.POWER_RESULT, result);
       } else {
