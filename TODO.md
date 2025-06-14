@@ -40,9 +40,12 @@
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
   `shuffleDeck` and Chancellor nomination eligibility.
 - First Presidential Candidate is now selected randomly when the game starts.
+- Added unit tests covering vote majority with dead players,
+  automatic policy enactment after three failed elections,
+  and Hitler election victory condition.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
-- Add more unit tests covering voting logic, policy processing and presidential
+- Add more unit tests covering policy processing and presidential
   powers. Integrate tests with CI.
 - Improve UI styling for board and player list.

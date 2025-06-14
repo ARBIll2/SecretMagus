@@ -203,6 +203,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Jest test framework added with initial unit tests for utilities and
   game engine nomination rules.
 - First Presidential Candidate now chosen randomly (Rules: Setup step 4).
+- Added tests for vote majority, election tracker auto policy, and Hitler election victory.
 
 
 
@@ -244,7 +245,7 @@ UI reactivity | Partial | Basic board component added; nomination and vote resul
 Player list display | ✅ | PlayerList component shows seating order with President and Chancellor markers
 Socket message handling | ✅ | Client and server handle defined message types
 Rules compliance (RULES.md) | Partial | Most rules enforced; disconnecting players are treated as executions
-Automated tests | Partial | Jest added with initial unit tests; more coverage needed
+Automated tests | Partial | Coverage expanded with voting and victory tests; further power tests needed
 
 - Identified blockers to reach playtest:
 - Improve phase-specific UI
