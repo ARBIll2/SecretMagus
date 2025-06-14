@@ -152,6 +152,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Add simple log on server to trace game state changes.
 - Use mock players for testing (e.g., 5 bots).
 - Keep all UI mobile-friendly from the start.
+- Chancellor term limit logic now enforced in `gameEngine.js`.
+- Next focus: full policy draw/discard flow and presidential powers.
 
 ---
 
@@ -171,6 +173,10 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Keep the game logic strictly on the server; clients only send user actions.
 - Add unit tests for utilities and the game engine as they are implemented.
 - Regularly update `TODO.md` when a step is completed or a new one appears.
+
+### Rule Implementation Notes
+- Term limits for Chancellor eligibility implemented (Rules: Election & Chancellor Eligibility).
+- Policy draw/discard mechanics and presidential powers remain TODO.
 
 
 

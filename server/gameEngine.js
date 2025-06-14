@@ -68,6 +68,8 @@ function startGame(room) {
     enactedPolicies: { liberal: 0, fascist: 0 },
     history: [],
     settings: { playerCount: room.players.length },
+    lastPresidentId: null,
+    lastChancellorId: null,
   };
 }
 
@@ -81,8 +83,15 @@ function nominateChancellor(room, presidentId, nomineeId) {
   const president = state.players[state.presidentIndex];
   if (president.id !== presidentId) return false;
 
-  const nomineeIndex = state.players.findIndex((p) => p.id === nomineeId && p.alive);
+  const nomineeIndex = state.players.findIndex(
+    (p) => p.id === nomineeId && p.alive
+  );
   if (nomineeIndex === -1 || nomineeIndex === state.presidentIndex) return false;
+
+  const aliveCount = state.players.filter((p) => p.alive).length;
+  if (state.lastChancellorId && nomineeId === state.lastChancellorId) return false;
+  if (aliveCount > 5 && state.lastPresidentId && nomineeId === state.lastPresidentId)
+    return false;
 
   state.chancellorIndex = nomineeIndex;
   state.phase = PHASES.VOTE;
@@ -122,6 +131,10 @@ function handleVote(room, playerId, vote) {
 
     if (passed) {
       const chancellor = state.players[state.chancellorIndex];
+
+      state.lastPresidentId = state.players[state.presidentIndex].id;
+      state.lastChancellorId = chancellor.id;
+
       if (
         chancellor.role === ROLES.HITLER &&
         state.enactedPolicies.fascist >= 3
@@ -142,6 +155,8 @@ function handleVote(room, playerId, vote) {
         const autoPolicy = state.policyDeck.pop();
         processPolicy(room, autoPolicy);
         state.failedElections = 0;
+        state.lastPresidentId = null;
+        state.lastChancellorId = null;
       }
       state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
       state.phase = PHASES.NOMINATE;
