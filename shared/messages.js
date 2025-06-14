@@ -1,0 +1,22 @@
+/**
+ * Socket message type constants for client/server communication.
+ */
+
+const MESSAGE_TYPES = Object.freeze({
+  CREATE_ROOM: 'CREATE_ROOM',
+  JOIN_ROOM: 'JOIN_ROOM',
+  START_GAME: 'START_GAME',
+  ROOM_UPDATE: 'ROOM_UPDATE',
+  GAME_START: 'GAME_START',
+  ROLE_ASSIGNMENT: 'ROLE_ASSIGNMENT',
+  VOTE_REQUEST: 'VOTE_REQUEST',
+  VOTE_RESULT: 'VOTE_RESULT',
+  POLICY_PROMPT: 'POLICY_PROMPT',
+  POLICY_RESULT: 'POLICY_RESULT',
+  POWER_PROMPT: 'POWER_PROMPT',
+  GAME_OVER: 'GAME_OVER',
+});
+
+module.exports = {
+  MESSAGE_TYPES,
+};
