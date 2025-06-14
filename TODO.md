@@ -39,6 +39,7 @@
 ### New in this wave
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
   `shuffleDeck` and Chancellor nomination eligibility.
+- First Presidential Candidate is now selected randomly when the game starts.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.

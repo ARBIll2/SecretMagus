@@ -202,6 +202,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Player list component added showing seating order with President and Chancellor markers.
 - Jest test framework added with initial unit tests for utilities and
   game engine nomination rules.
+- First Presidential Candidate now chosen randomly (Rules: Setup step 4).
 
 
 
@@ -232,6 +233,7 @@ Feature | Status | Notes
 --- | --- | ---
 Room creation & join flow | ✅ | Rooms can be created and joined from the lobby
 Role assignment | ✅ | Roles assigned on game start with correct knowledge share
+Initial President randomization | ✅ | First Presidential Candidate selected randomly
 Game phases (nominate → vote → policy) | ✅ | Auto policy results broadcast and core flow works
 Vote counting | ✅ | Majority check counts only alive players
 Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles the discard pile when needed
