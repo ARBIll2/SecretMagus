@@ -109,6 +109,19 @@ export default function Game() {
           <p>Special Election: {powerResult.targetId} will be the next President.</p>
         </div>
       )}
+      {powerResult && powerResult.power === 'POLICY_PEEK' && (
+        <div>
+          <p>Top Policies: {powerResult.policies.join(', ')}</p>
+        </div>
+      )}
+      {powerResult && powerResult.power === 'EXECUTION' && (
+        <div>
+          <p>{powerResult.targetName} has been executed.</p>
+          {powerResult.gameOver && (
+            <p>Game Over - {powerResult.gameOver.winner} win: {powerResult.gameOver.reason}</p>
+          )}
+        </div>
+      )}
 
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
       {/* TODO: replace with proper components for each game phase */}

@@ -156,6 +156,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Chancellor term limit logic now enforced in `gameEngine.js`.
 - Investigate Loyalty implemented; remember to send POWER_PROMPT only to the acting President and POWER_RESULT only to them.
 - Special Election power implemented. The President selects any alive player for the next Presidential Candidate. After that election, presidency returns left of the original President.
+- Policy Peek power implemented. The top three policies are shown privately to the President.
+- Execution power implemented. The President may kill a player; if Hitler is executed the Liberals win. POWER_RESULT is broadcast to all players.
 
 ---
 
@@ -179,8 +181,10 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 ### Rule Implementation Notes
 - Term limits for Chancellor eligibility implemented (Rules: Election & Chancellor Eligibility).
 - Basic policy draw/discard flow implemented. Deck reshuffles the discard pile when fewer than three cards remain (Rules: Legislative Session, Policy Deck Management).
-- Investigate Loyalty power implemented with secrecy preserved (Rules: Presidential Powers - Investigate Loyalty). Other powers and veto power remain TODO.
+- Investigate Loyalty power implemented with secrecy preserved (Rules: Presidential Powers - Investigate Loyalty).
 - Special Election power implemented (Rules: Presidential Powers - Call Special Election). Presidency order resumes to the left of the original President after the election.
+- Policy Peek power implemented (Rules: Presidential Powers - Policy Peek). President privately views top three policies.
+- Execution power implemented (Rules: Presidential Powers - Execution). Killing Hitler results in an immediate Liberal victory.
 
 
 

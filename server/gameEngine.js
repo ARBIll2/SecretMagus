@@ -320,7 +320,7 @@ function handlePolicyChoice(room, playerId, policy) {
 
 /**
  * Handles the execution of a Presidential power.
- * Currently only implements Investigate Loyalty.
+ * Implements Investigate Loyalty, Special Election, Policy Peek, and Execution.
  * @param {object} room Room containing the game state
  * @param {string} playerId Acting player's socket id (President)
  * @param {object} action Action details from the client
@@ -362,6 +362,47 @@ function handlePower(room, playerId, action) {
     state.phase = PHASES.NOMINATE;
 
     return { power: POWERS.SPECIAL_ELECTION, targetId: action.targetId };
+  }
+
+  if (state.pendingPower === POWERS.POLICY_PEEK) {
+    while (state.policyDeck.length < 3) {
+      state.policyDeck = shuffleDeck([...state.policyDeck, ...state.discardPile]);
+      state.discardPile = [];
+    }
+    const peek = state.policyDeck.slice(-3);
+    state.history.push({ type: 'POLICY_PEEK', president: playerId });
+
+    state.pendingPower = null;
+    state.powerPresidentId = null;
+    advancePresidency(state);
+    state.phase = PHASES.NOMINATE;
+
+    return { power: POWERS.POLICY_PEEK, policies: peek };
+  }
+
+  if (state.pendingPower === POWERS.EXECUTION) {
+    const target = state.players.find((p) => p.id === action.targetId && p.alive);
+    if (!target) return null;
+
+    target.alive = false;
+    state.history.push({ type: 'EXECUTION', president: playerId, target: target.id });
+
+    const victory =
+      target.role === ROLES.HITLER
+        ? { winner: 'LIBERALS', reason: 'HITLER_EXECUTED' }
+        : null;
+
+    state.pendingPower = null;
+    state.powerPresidentId = null;
+
+    if (!victory) {
+      advancePresidency(state);
+      state.phase = PHASES.NOMINATE;
+    } else {
+      state.phase = PHASES.GAME_OVER;
+    }
+
+    return { power: POWERS.EXECUTION, targetId: target.id, targetName: target.name, gameOver: victory, broadcast: true };
   }
 
   return null;
