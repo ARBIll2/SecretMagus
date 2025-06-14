@@ -59,10 +59,10 @@ function startGame(room) {
  */
 function handleVote(room, playerId, vote) {
   const state = room.game;
-  if (!state || state.phase !== PHASES.VOTE) return;
+  if (!state || state.phase !== PHASES.VOTE) return null;
 
   const player = state.players.find((p) => p.id === playerId);
-  if (!player || player.hasVoted) return;
+  if (!player || player.hasVoted) return null;
 
   player.hasVoted = true;
   player.vote = vote;
@@ -95,7 +95,15 @@ function handleVote(room, playerId, vote) {
       state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
       state.phase = PHASES.NOMINATE;
     }
+
+    return {
+      completed: true,
+      passed,
+      votes: state.history[state.history.length - 1].votes,
+    };
   }
+
+  return { completed: false };
 }
 
 /**
@@ -103,7 +111,7 @@ function handleVote(room, playerId, vote) {
  */
 function processPolicy(room, policy) {
   const state = room.game;
-  if (!state) return;
+  if (!state) return null;
 
   if (policy === 'LIBERAL') {
     state.enactedPolicies.liberal += 1;
@@ -116,6 +124,10 @@ function processPolicy(room, policy) {
   state.chancellorIndex = null;
   state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
   state.phase = PHASES.NOMINATE;
+
+  return {
+    enactedPolicies: { ...state.enactedPolicies },
+  };
 }
 
 module.exports = {
