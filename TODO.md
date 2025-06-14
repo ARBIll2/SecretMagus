@@ -23,8 +23,10 @@
 ## Completed in this wave
 - Implemented initial fascist/Hitler knowledge sharing on game start.
 - Added simple server logging for key state changes.
+- Enforced executed player restrictions: dead players cannot vote or hold office and presidency skips them. UI hides vote panel when executed.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
 - Write unit tests for game engine, utilities, and room management.
 - Improve lobby UI to display joined players and error messages.
+- Add visual indicators for executed players in all UI components and test presidency rotation logic.

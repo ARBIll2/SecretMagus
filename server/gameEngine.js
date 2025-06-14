@@ -73,6 +73,12 @@ function advancePresidency(state) {
   } else {
     state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
   }
+  // Skip executed players
+  let safety = 0;
+  while (!state.players[state.presidentIndex].alive && safety < state.players.length) {
+    state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+    safety += 1;
+  }
 }
 
 /**
@@ -192,13 +198,13 @@ function handleVote(room, playerId, vote) {
   if (!state || state.phase !== PHASES.VOTE) return null;
 
   const player = state.players.find((p) => p.id === playerId);
-  if (!player || player.hasVoted) return null;
+  if (!player || !player.alive || player.hasVoted) return null;
 
   player.hasVoted = true;
   player.vote = vote;
 
-  if (state.players.every((p) => p.hasVoted)) {
-    const yesVotes = state.players.filter((p) => p.vote === true).length;
+  if (state.players.filter((p) => p.alive).every((p) => p.hasVoted)) {
+    const yesVotes = state.players.filter((p) => p.alive && p.vote === true).length;
     const passed = yesVotes > state.players.length / 2;
 
     state.history.push({

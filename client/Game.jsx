@@ -10,6 +10,8 @@ import { PHASES } from '../shared/constants.js';
 export default function Game() {
   const { socket, gameState, role, roleInfo, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt } = useContext(GameStateContext);
 
+  const me = gameState?.game?.players?.find((p) => p.id === playerId);
+
   const roomCode = gameState?.code || gameState?.roomCode;
 
   const castVote = (vote) => {
@@ -73,6 +75,8 @@ export default function Game() {
         <p>Hitler is {roleInfo.hitler.name}</p>
       )}
 
+      {me && !me.alive && <p>You have been executed and may not act.</p>}
+
       {!gameState.gameOver && gameState?.game?.phase === PHASES.NOMINATE && (
         playerId === gameState.game.players[gameState.game.presidentIndex]?.id ? (
           <div>
@@ -90,13 +94,15 @@ export default function Game() {
         )
       )}
 
-      {!gameState.gameOver && gameState?.game?.phase === PHASES.VOTE && (
-        <div>
-          <h3>Cast Your Vote</h3>
-          <button onClick={() => castVote(true)}>Ja!</button>
-          <button onClick={() => castVote(false)}>Nein!</button>
-        </div>
-      )}
+      {!gameState.gameOver &&
+        gameState?.game?.phase === PHASES.VOTE &&
+        me?.alive && (
+          <div>
+            <h3>Cast Your Vote</h3>
+            <button onClick={() => castVote(true)}>Ja!</button>
+            <button onClick={() => castVote(false)}>Nein!</button>
+          </div>
+        )}
 
       {policyPrompt && !gameState.gameOver && (
         <div>
