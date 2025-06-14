@@ -55,6 +55,27 @@ function startGame(room) {
 }
 
 /**
+ * Nominates a chancellor and moves to voting phase.
+ */
+function nominateChancellor(room, presidentId, nomineeId) {
+  const state = room.game;
+  if (!state || state.phase !== PHASES.NOMINATE) return false;
+
+  const president = state.players[state.presidentIndex];
+  if (president.id !== presidentId) return false;
+
+  const nomineeIndex = state.players.findIndex((p) => p.id === nomineeId && p.alive);
+  if (nomineeIndex === -1 || nomineeIndex === state.presidentIndex) return false;
+
+  state.chancellorIndex = nomineeIndex;
+  state.phase = PHASES.VOTE;
+
+  state.history.push({ type: 'NOMINATION', president: presidentId, chancellor: nomineeId });
+
+  return true;
+}
+
+/**
  * Handles player votes.
  */
 function handleVote(room, playerId, vote) {
@@ -134,5 +155,6 @@ module.exports = {
   startGame,
   handleVote,
   processPolicy,
+  nominateChancellor,
   // TODO: add more handlers for each phase and power
 };

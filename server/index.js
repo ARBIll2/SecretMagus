@@ -52,6 +52,22 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
 
+  socket.on(MESSAGE_TYPES.NOMINATE_CHANCELLOR, ({ roomCode, nomineeId }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+    const success = gameEngine.nominateChancellor(room, socket.id, nomineeId);
+    if (success) {
+      io.to(roomCode).emit(MESSAGE_TYPES.VOTE_REQUEST, {
+        presidentId: socket.id,
+        nomineeId,
+      });
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+    }
+  });
+
   socket.on(MESSAGE_TYPES.CAST_VOTE, ({ roomCode, vote }) => {
     const room = roomManager.getRoomByCode(roomCode);
     if (!room) {

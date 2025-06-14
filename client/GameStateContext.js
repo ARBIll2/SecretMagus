@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { MESSAGE_TYPES } from '../shared/messages.js';
+import { PHASES } from '../shared/constants.js';
 
 /**
  * Context providing game state and socket connection to components.
@@ -12,10 +13,15 @@ export default function GameStateProvider({ children }) {
   const [gameState, setGameState] = useState({});
   const [role, setRole] = useState(null);
   const [policyPrompt, setPolicyPrompt] = useState(false);
+  const [playerId, setPlayerId] = useState(null);
 
   useEffect(() => {
     const sock = io();
     setSocket(sock);
+
+    sock.on('connect', () => {
+      setPlayerId(sock.id);
+    });
 
     // Listen for room and game state updates
     sock.on(MESSAGE_TYPES.ROOM_UPDATE, (state) => {
@@ -30,6 +36,13 @@ export default function GameStateProvider({ children }) {
     // Update game state when a new game starts
     sock.on(MESSAGE_TYPES.GAME_START, (game) => {
       setGameState((prev) => ({ ...prev, game }));
+    });
+
+    sock.on(MESSAGE_TYPES.VOTE_REQUEST, () => {
+      setGameState((prev) => ({
+        ...prev,
+        game: { ...prev.game, phase: PHASES.VOTE },
+      }));
     });
 
     sock.on(MESSAGE_TYPES.VOTE_RESULT, (result) => {
@@ -57,7 +70,7 @@ export default function GameStateProvider({ children }) {
   }, []);
 
   return (
-    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt }}>
+    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt, playerId }}>
       {children}
     </GameStateContext.Provider>
   );
