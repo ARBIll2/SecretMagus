@@ -125,6 +125,38 @@ function startGame(room) {
 }
 
 /**
+ * Determines which players each participant knows at the start of the game.
+ * Implements the "eyes closed" sequence from the official rules.
+ * @param {object} game Initialized game state
+ * @returns {object} Mapping of playerId -> info { role, fascists?, hitler? }
+ */
+function getInitialKnowledge(game) {
+  const count = game.players.length;
+  const hitler = game.players.find((p) => p.role === ROLES.HITLER);
+  const fascists = game.players.filter((p) => p.role === ROLES.FASCIST);
+
+  const knowledge = {};
+  game.players.forEach((p) => {
+    const info = { role: p.role };
+    if (p.role === ROLES.FASCIST) {
+      info.fascists = fascists
+        .filter((f) => f.id !== p.id)
+        .map((f) => ({ id: f.id, name: f.name }));
+      info.hitler = { id: hitler.id, name: hitler.name };
+    } else if (p.role === ROLES.HITLER) {
+      if (count <= 6) {
+        info.fascists = fascists.map((f) => ({ id: f.id, name: f.name }));
+      } else {
+        info.fascists = [];
+      }
+    }
+    knowledge[p.id] = info;
+  });
+
+  return knowledge;
+}
+
+/**
  * Nominates a chancellor and moves to voting phase.
  */
 function nominateChancellor(room, presidentId, nomineeId) {
@@ -474,5 +506,6 @@ module.exports = {
   handlePolicyChoice,
   handleVetoDecision,
   handlePower,
+  getInitialKnowledge,
   // TODO: add more handlers for each phase and power
 };

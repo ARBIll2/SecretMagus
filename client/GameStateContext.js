@@ -12,6 +12,7 @@ export default function GameStateProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [gameState, setGameState] = useState({});
   const [role, setRole] = useState(null);
+  const [roleInfo, setRoleInfo] = useState(null);
   const [policyPrompt, setPolicyPrompt] = useState(null);
   const [vetoPrompt, setVetoPrompt] = useState(false);
   const [powerPrompt, setPowerPrompt] = useState(null);
@@ -32,8 +33,9 @@ export default function GameStateProvider({ children }) {
     });
 
     // Handle role assignment for this client
-    sock.on(MESSAGE_TYPES.ROLE_ASSIGNMENT, ({ role }) => {
-      setRole(role);
+    sock.on(MESSAGE_TYPES.ROLE_ASSIGNMENT, (info) => {
+      setRole(info.role);
+      setRoleInfo(info);
     });
 
     // Update game state when a new game starts
@@ -99,7 +101,19 @@ export default function GameStateProvider({ children }) {
   }, []);
 
   return (
-    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt }}>
+    <GameStateContext.Provider
+      value={{
+        socket,
+        gameState,
+        role,
+        roleInfo,
+        policyPrompt,
+        powerPrompt,
+        powerResult,
+        playerId,
+        vetoPrompt,
+      }}
+    >
       {children}
     </GameStateContext.Provider>
   );

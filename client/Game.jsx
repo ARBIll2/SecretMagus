@@ -8,7 +8,7 @@ import { PHASES } from '../shared/constants.js';
  * TODO: Add nomination, voting, policy selection, and powers UI.
  */
 export default function Game() {
-  const { socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt } = useContext(GameStateContext);
+  const { socket, gameState, role, roleInfo, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt } = useContext(GameStateContext);
 
   const roomCode = gameState?.code || gameState?.roomCode;
 
@@ -59,6 +59,19 @@ export default function Game() {
         </div>
       )}
       {role && <p>Your role: {role}</p>}
+      {roleInfo && roleInfo.fascists && roleInfo.fascists.length > 0 && (
+        <div>
+          <p>Known Fascists:</p>
+          <ul>
+            {roleInfo.fascists.map((f) => (
+              <li key={f.id}>{f.name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {roleInfo && roleInfo.hitler && (
+        <p>Hitler is {roleInfo.hitler.name}</p>
+      )}
 
       {!gameState.gameOver && gameState?.game?.phase === PHASES.NOMINATE && (
         playerId === gameState.game.players[gameState.game.presidentIndex]?.id ? (

@@ -190,6 +190,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Special Election power implemented (Rules: Presidential Powers - Call Special Election). Presidency order resumes to the left of the original President after the election.
 - Policy Peek power implemented (Rules: Presidential Powers - Policy Peek). President privately views top three policies.
 - Execution power implemented (Rules: Presidential Powers - Execution). Killing Hitler results in an immediate Liberal victory.
+- Initial fascist knowledge reveal implemented according to player count (Rules: Setup - Eyes Closed Sequence).
+- Basic logging added on server for game start, nominations, votes, policies, vetoes, and powers.
 
 
 
@@ -207,5 +209,6 @@ Codex agents and contributors must ensure every gameplay feature aligns with **R
 7. **Veto Power** – Allow veto requests only after five Fascist policies and handle tracker advancement if a veto occurs.
 8. **Eligibility and Term Limits** – Enforce that the last elected President and Chancellor cannot be nominated as Chancellor (except when only five players remain, where only the last Chancellor is barred).
 9. **Logging & Validation** – Log all state changes and cross-check against RULES.md when implementing new features.
+10. **Executed Players** – Ensure executed players cannot speak or hold office. UI still needs cues and restrictions.
 
 Before merging any change, verify the checklist above and update tests to cover new logic.
