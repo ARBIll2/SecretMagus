@@ -15,6 +15,7 @@ function createRoom(hostPlayer) {
     roomCode = generateRoomCode();
   }
   rooms[roomCode] = {
+    code: roomCode,
     players: [hostPlayer],
     game: null,
   };
