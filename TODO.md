@@ -8,8 +8,9 @@
 
 ## Completed in this wave
 - Implemented vote and policy socket events using the game engine.
+- Added client handlers for role assignment, vote and policy events.
+- Created basic UI elements for casting votes and selecting policies.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase.
-- Add client handlers for vote and policy events.
 - Write unit tests for game engine, utilities, and room management.

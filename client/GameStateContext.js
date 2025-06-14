@@ -10,24 +10,54 @@ export const GameStateContext = createContext({});
 export default function GameStateProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [gameState, setGameState] = useState({});
+  const [role, setRole] = useState(null);
+  const [policyPrompt, setPolicyPrompt] = useState(false);
 
   useEffect(() => {
     const sock = io();
     setSocket(sock);
 
-    // Example: listen for game state updates
+    // Listen for room and game state updates
     sock.on(MESSAGE_TYPES.ROOM_UPDATE, (state) => {
       setGameState(state);
     });
 
-    // TODO: add more listeners for game events
+    // Handle role assignment for this client
+    sock.on(MESSAGE_TYPES.ROLE_ASSIGNMENT, ({ role }) => {
+      setRole(role);
+    });
+
+    // Update game state when a new game starts
+    sock.on(MESSAGE_TYPES.GAME_START, (game) => {
+      setGameState((prev) => ({ ...prev, game }));
+    });
+
+    sock.on(MESSAGE_TYPES.VOTE_RESULT, (result) => {
+      setGameState((prev) => ({ ...prev, lastVote: result }));
+    });
+
+    sock.on(MESSAGE_TYPES.POLICY_PROMPT, () => {
+      setPolicyPrompt(true);
+    });
+
+    sock.on(MESSAGE_TYPES.POLICY_RESULT, (res) => {
+      setPolicyPrompt(false);
+      setGameState((prev) => ({
+        ...prev,
+        game: {
+          ...prev.game,
+          enactedPolicies: res.enactedPolicies,
+        },
+      }));
+    });
+
     return () => {
       sock.disconnect();
     };
   }, []);
 
   return (
-    <GameStateContext.Provider value={{ socket, gameState }}>
+    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt }}>
       {children}
     </GameStateContext.Provider>
   );
