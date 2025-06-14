@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 const roomManager = require('./roomManager.js');
 const gameEngine = require('./gameEngine.js');
 const { MESSAGE_TYPES } = require('../shared/messages.js');
-const { PHASES, POWERS } = require('../shared/constants.js');
+const { PHASES, POWERS, ROLES } = require('../shared/constants.js');
 
 /**
  * Initializes express and socket.io server.
@@ -234,8 +234,34 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     roomManager.listRooms().forEach((code) => {
-      roomManager.removePlayer(code, socket.id);
-      io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, roomManager.getRoomByCode(code));
+      const room = roomManager.getRoomByCode(code);
+      if (!room) return;
+      const playerIndex = room.players.findIndex((p) => p.id === socket.id);
+      if (playerIndex === -1) return;
+
+      // If a game is active, treat the disconnecting player as executed
+      if (room.game && room.game.phase !== PHASES.GAME_OVER) {
+        const gPlayer = room.game.players.find((p) => p.id === socket.id);
+        if (gPlayer && gPlayer.alive) {
+          gPlayer.alive = false;
+          room.game.history.push({ type: 'DISCONNECT', player: socket.id });
+          logEvent(code, 'PLAYER_DISCONNECT', socket.id);
+
+          if (gPlayer.role === ROLES.HITLER) {
+            const result = { winner: 'LIBERALS', reason: 'HITLER_EXECUTED' };
+            room.game.phase = PHASES.GAME_OVER;
+            io.to(code).emit(MESSAGE_TYPES.GAME_OVER, result);
+          }
+        }
+        room.players.splice(playerIndex, 1);
+        io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+      } else {
+        roomManager.removePlayer(code, socket.id);
+        const updated = roomManager.getRoomByCode(code);
+        if (updated) {
+          io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, updated);
+        }
+      }
     });
   });
 });
