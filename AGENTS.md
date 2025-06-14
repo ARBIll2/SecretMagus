@@ -200,6 +200,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Client tracks current nomination and displays vote results to improve transparency.
 - Basic board UI added showing policy tracks and election tracker progress.
 - Player list component added showing seating order with President and Chancellor markers.
+- Jest test framework added with initial unit tests for utilities and
+  game engine nomination rules.
 
 
 
@@ -240,7 +242,8 @@ UI reactivity | Partial | Basic board component added; nomination and vote resul
 Player list display | ✅ | PlayerList component shows seating order with President and Chancellor markers
 Socket message handling | ✅ | Client and server handle defined message types
 Rules compliance (RULES.md) | Partial | Most rules enforced; disconnecting players are treated as executions
+Automated tests | Partial | Jest added with initial unit tests; more coverage needed
 
 - Identified blockers to reach playtest:
 - Improve phase-specific UI
-- Add automated tests for rule enforcement
+- Expand automated test coverage for rule enforcement
