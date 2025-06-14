@@ -154,7 +154,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Keep all UI mobile-friendly from the start.
 - Chancellor term limit logic now enforced in `gameEngine.js`.
 - Chancellor term limit logic now enforced in `gameEngine.js`.
-- Investigate Loyalty implemented; remember to send POWER_PROMPT only to the acting President and POWER_RESULT only to them. Keep other powers pending implementation.
+- Investigate Loyalty implemented; remember to send POWER_PROMPT only to the acting President and POWER_RESULT only to them.
+- Special Election power implemented. The President selects any alive player for the next Presidential Candidate. After that election, presidency returns left of the original President.
 
 ---
 
@@ -179,6 +180,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Term limits for Chancellor eligibility implemented (Rules: Election & Chancellor Eligibility).
 - Basic policy draw/discard flow implemented. Deck reshuffles the discard pile when fewer than three cards remain (Rules: Legislative Session, Policy Deck Management).
 - Investigate Loyalty power implemented with secrecy preserved (Rules: Presidential Powers - Investigate Loyalty). Other powers and veto power remain TODO.
+- Special Election power implemented (Rules: Presidential Powers - Call Special Election). Presidency order resumes to the left of the original President after the election.
 
 
 

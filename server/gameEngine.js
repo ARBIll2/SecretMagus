@@ -62,6 +62,20 @@ function checkVictory(state) {
 }
 
 /**
+ * Advances the presidency to the next player, handling Special Election return
+ * logic if applicable.
+ * @param {object} state Game state
+ */
+function advancePresidency(state) {
+  if (state.specialElectionReturnIndex !== null) {
+    state.presidentIndex = state.specialElectionReturnIndex;
+    state.specialElectionReturnIndex = null;
+  } else {
+    state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+  }
+}
+
+/**
  * Example structure of a game state object.
  */
 // const exampleState = {
@@ -106,6 +120,7 @@ function startGame(room) {
     pendingPower: null,
     powerPresidentId: null,
     investigatedIds: [],
+    specialElectionReturnIndex: null,
   };
 }
 
@@ -194,7 +209,7 @@ function handleVote(room, playerId, vote) {
         state.lastPresidentId = null;
         state.lastChancellorId = null;
       }
-      state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+      advancePresidency(state);
       state.phase = PHASES.NOMINATE;
     }
 
@@ -235,11 +250,11 @@ function processPolicy(room, policy) {
         state.powerPresidentId = state.players[state.presidentIndex].id;
         state.phase = PHASES.POWER;
       } else {
-        state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+        advancePresidency(state);
         state.phase = PHASES.NOMINATE;
       }
     } else {
-      state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+      advancePresidency(state);
       state.phase = PHASES.NOMINATE;
     }
   }
@@ -327,10 +342,26 @@ function handlePower(room, playerId, action) {
     // cleanup and advance round
     state.pendingPower = null;
     state.powerPresidentId = null;
-    state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+    advancePresidency(state);
     state.phase = PHASES.NOMINATE;
 
     return { power: POWERS.INVESTIGATE, targetId: target.id, membership };
+  }
+
+  if (state.pendingPower === POWERS.SPECIAL_ELECTION) {
+    const targetIdx = state.players.findIndex((p) => p.id === action.targetId && p.alive);
+    if (targetIdx === -1) return null;
+
+    state.history.push({ type: 'SPECIAL_ELECTION', president: playerId, target: action.targetId });
+
+    state.specialElectionReturnIndex = (state.presidentIndex + 1) % state.players.length;
+    state.presidentIndex = targetIdx;
+
+    state.pendingPower = null;
+    state.powerPresidentId = null;
+    state.phase = PHASES.NOMINATE;
+
+    return { power: POWERS.SPECIAL_ELECTION, targetId: action.targetId };
   }
 
   return null;

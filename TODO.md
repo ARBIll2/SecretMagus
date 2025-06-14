@@ -15,9 +15,10 @@
 - Enforced Chancellor eligibility term limits according to rules.
 - Implemented policy draw/discard flow with deck reshuffle and updated client prompts.
 - Added initial implementation of Investigate Loyalty power with server handler and client prompt.
+- Added Special Election presidential power with server logic and client UI.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
-- Implement remaining special powers (Special Election, Policy Peek, Execution).
+ - Implement remaining special powers (Policy Peek, Execution).
 - Write unit tests for game engine, utilities, and room management.
 - Add veto power after five fascist policies.
