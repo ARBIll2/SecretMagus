@@ -8,7 +8,19 @@ import { PHASES } from '../shared/constants.js';
  * TODO: Add nomination, voting, policy selection, and powers UI.
  */
 export default function Game() {
-  const { socket, gameState, role, roleInfo, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt, leaveRoom } = useContext(GameStateContext);
+  const {
+    socket,
+    gameState,
+    role,
+    roleInfo,
+    policyPrompt,
+    powerPrompt,
+    powerResult,
+    playerId,
+    vetoPrompt,
+    nomination,
+    leaveRoom,
+  } = useContext(GameStateContext);
 
   const me = gameState?.game?.players?.find((p) => p.id === playerId);
 
@@ -83,6 +95,21 @@ export default function Game() {
       )}
 
       {me && !me.alive && <p>You have been executed and may not act.</p>}
+
+      {nomination && (
+        <p>
+          {
+            gameState.game.players.find((p) => p.id === nomination.presidentId)
+              ?.name
+          }{' '}
+          nominated{' '}
+          {
+            gameState.game.players.find((p) => p.id === nomination.nomineeId)
+              ?.name
+          }
+          {' '}as Chancellor.
+        </p>
+      )}
 
       {!gameState.gameOver && gameState?.game?.phase === PHASES.NOMINATE && (
         playerId === gameState.game.players[gameState.game.presidentIndex]?.id ? (
@@ -169,6 +196,22 @@ export default function Game() {
           {powerResult.gameOver && (
             <p>Game Over - {powerResult.gameOver.winner} win: {powerResult.gameOver.reason}</p>
           )}
+        </div>
+      )}
+
+      {gameState.lastVote && (
+        <div>
+          <h3>Vote Result: {gameState.lastVote.passed ? 'Government elected' : 'Rejected'}</h3>
+          <ul>
+            {gameState.lastVote.votes.map((v) => {
+              const name = gameState.game.players.find((p) => p.id === v.id)?.name || v.id;
+              return (
+                <li key={v.id}>
+                  {name}: {v.vote ? 'Ja' : 'Nein'}
+                </li>
+              );
+            })}
+          </ul>
         </div>
       )}
 

@@ -196,6 +196,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Lobby now displays joined players and room code. Only the host may start the game once five or more players have joined. Clients stay in the lobby until the `GAME_START` message arrives.
 - Players may leave a room before the game starts via `LEAVE_ROOM`. Disconnecting during a game now marks that player as executed and ends the game if Hitler disconnects.
 - Auto policy results from the Election Tracker are now broadcast to all players to maintain sync.
+- Client tracks current nomination and displays vote results to improve transparency.
 
 
 
@@ -232,7 +233,7 @@ Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles the discard pi
 Fascist powers | ✅ | Investigate, Special Election, Policy Peek, Execution and Veto implemented
 Win condition checks | ✅ | All victory conditions evaluated in the engine
 Game state broadcast & sync | Partial | Core events sent via socket but some state changes are not emitted
-UI reactivity | Partial | React components exist but largely debug oriented
+UI reactivity | Partial | React components exist but largely debug oriented; nomination and vote results now shown
 Socket message handling | ✅ | Client and server handle defined message types
 Rules compliance (RULES.md) | Partial | Most rules enforced; disconnecting players are treated as executions
 

@@ -18,6 +18,7 @@ export default function GameStateProvider({ children }) {
   const [powerPrompt, setPowerPrompt] = useState(null);
   const [powerResult, setPowerResult] = useState(null);
   const [playerId, setPlayerId] = useState(null);
+  const [nomination, setNomination] = useState(null);
 
   const resetState = () => {
     setGameState({});
@@ -27,6 +28,7 @@ export default function GameStateProvider({ children }) {
     setVetoPrompt(false);
     setPowerPrompt(null);
     setPowerResult(null);
+    setNomination(null);
   };
 
   useEffect(() => {
@@ -53,14 +55,16 @@ export default function GameStateProvider({ children }) {
       setGameState((prev) => ({ ...prev, game }));
     });
 
-    sock.on(MESSAGE_TYPES.VOTE_REQUEST, () => {
+    sock.on(MESSAGE_TYPES.VOTE_REQUEST, ({ presidentId, nomineeId }) => {
       setGameState((prev) => ({
         ...prev,
         game: { ...prev.game, phase: PHASES.VOTE },
       }));
+      setNomination({ presidentId, nomineeId });
     });
 
     sock.on(MESSAGE_TYPES.VOTE_RESULT, (result) => {
+      setNomination(null);
       setGameState((prev) => ({ ...prev, lastVote: result }));
     });
 
@@ -128,6 +132,7 @@ export default function GameStateProvider({ children }) {
         powerPrompt,
         powerResult,
         playerId,
+        nomination,
         vetoPrompt,
         leaveRoom,
       }}
