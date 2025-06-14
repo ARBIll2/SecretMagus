@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const roomManager = require('./roomManager.js');
 const gameEngine = require('./gameEngine.js');
 const { MESSAGE_TYPES } = require('../shared/messages.js');
+const { PHASES } = require('../shared/constants.js');
 
 /**
  * Initializes express and socket.io server.
@@ -48,6 +49,36 @@ io.on('connection', (socket) => {
     room.players.forEach((p) => {
       io.to(p.id).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, { role: p.role });
     });
+    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+  });
+
+  socket.on(MESSAGE_TYPES.CAST_VOTE, ({ roomCode, vote }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+    const result = gameEngine.handleVote(room, socket.id, vote);
+    if (result && result.completed) {
+      io.to(roomCode).emit(MESSAGE_TYPES.VOTE_RESULT, {
+        passed: result.passed,
+        votes: result.votes,
+      });
+      if (room.game.phase === PHASES.POLICY) {
+        io.to(roomCode).emit(MESSAGE_TYPES.POLICY_PROMPT);
+      }
+    }
+    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+  });
+
+  socket.on(MESSAGE_TYPES.POLICY_CHOICE, ({ roomCode, policy }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+    const result = gameEngine.processPolicy(room, policy);
+    io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, result);
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
 
