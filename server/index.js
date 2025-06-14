@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 const roomManager = require('./roomManager.js');
 const gameEngine = require('./gameEngine.js');
 const { MESSAGE_TYPES } = require('../shared/messages.js');
-const { PHASES } = require('../shared/constants.js');
+const { PHASES, POWERS } = require('../shared/constants.js');
 
 /**
  * Initializes express and socket.io server.
@@ -89,12 +89,23 @@ io.on('connection', (socket) => {
         io.to(presidentId).emit(MESSAGE_TYPES.POLICY_PROMPT, { policies });
       }
       if (room.game.phase === PHASES.POWER) {
-        io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
-          power: room.game.pendingPower,
-          players: room.game.players
-            .filter((p) => p.alive)
-            .map((p) => ({ id: p.id, name: p.name })),
-        });
+        if (room.game.pendingPower === POWERS.POLICY_PEEK) {
+          const result = gameEngine.handlePower(
+            room,
+            room.game.powerPresidentId,
+            {}
+          );
+          io
+            .to(room.game.powerPresidentId)
+            .emit(MESSAGE_TYPES.POWER_RESULT, result);
+        } else {
+          io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+            power: room.game.pendingPower,
+            players: room.game.players
+              .filter((p) => p.alive)
+              .map((p) => ({ id: p.id, name: p.name })),
+          });
+        }
       }
     }
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
@@ -139,7 +150,14 @@ io.on('connection', (socket) => {
     }
     const result = gameEngine.handlePower(room, socket.id, action);
     if (result) {
-      io.to(socket.id).emit(MESSAGE_TYPES.POWER_RESULT, result);
+      if (result.broadcast) {
+        io.to(roomCode).emit(MESSAGE_TYPES.POWER_RESULT, result);
+      } else {
+        io.to(socket.id).emit(MESSAGE_TYPES.POWER_RESULT, result);
+      }
+      if (result.gameOver) {
+        io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
+      }
       io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
     }
   });
