@@ -30,8 +30,8 @@
 - Added ability for players to leave a room before the game starts. Client UI now includes "Leave Room" buttons and server handles `LEAVE_ROOM` events.
 
 ## Next Steps
-- Expand React UI components for each gameplay phase (policy draw, powers).
-- Write unit tests for game engine, utilities, and room management.
-- Add visual indicators for executed players in all UI components and test presidency rotation logic.
-- Implement a routing/state machine to manage Lobby vs Game views.
-- Handle players leaving or disconnecting during an active game.
+- Fix vote majority logic to count only alive players when determining if an election passes.
+- Broadcast results of auto policies triggered by the election tracker so all clients stay in sync.
+- Handle players leaving or disconnecting during an active game and decide whether play continues or ends.
+- Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
+- Write unit tests for the game engine and helpers to enforce rule compliance and prevent regressions.
