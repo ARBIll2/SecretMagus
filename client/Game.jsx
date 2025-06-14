@@ -3,6 +3,7 @@ import { GameStateContext } from './GameStateContext.js';
 import { MESSAGE_TYPES } from '../shared/messages.js';
 import { PHASES } from '../shared/constants.js';
 import Board from './Board.jsx';
+import PlayerList from './PlayerList.jsx';
 
 /**
  * Main game UI. Renders based on current game state from context.
@@ -74,6 +75,7 @@ export default function Game() {
       <h2>Game In Progress</h2>
       <button onClick={exitRoom}>Leave Room</button>
       <Board />
+      <PlayerList />
       {gameState.gameOver && (
         <div>
           <h3>Game Over</h3>

@@ -199,6 +199,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Auto policy results from the Election Tracker are now broadcast to all players to maintain sync.
 - Client tracks current nomination and displays vote results to improve transparency.
 - Basic board UI added showing policy tracks and election tracker progress.
+- Player list component added showing seating order with President and Chancellor markers.
 
 
 
@@ -236,6 +237,7 @@ Fascist powers | ✅ | Investigate, Special Election, Policy Peek, Execution and
 Win condition checks | ✅ | All victory conditions evaluated in the engine
 Game state broadcast & sync | Partial | Core events sent via socket but some state changes are not emitted
 UI reactivity | Partial | Basic board component added; nomination and vote results shown but styling minimal
+Player list display | ✅ | PlayerList component shows seating order with President and Chancellor markers
 Socket message handling | ✅ | Client and server handle defined message types
 Rules compliance (RULES.md) | Partial | Most rules enforced; disconnecting players are treated as executions
 
