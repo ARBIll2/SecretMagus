@@ -2,7 +2,7 @@
  * Game engine responsible for handling Secret Hitler logic.
  * All logic should be server-side and authoritative.
  */
-const { ROLES, PHASES } = require('../shared/constants.js');
+const { ROLES, PHASES, POWERS, FASCIST_POWERS } = require('../shared/constants.js');
 const { assignRoles, shuffleDeck } = require('../shared/utils.js');
 
 const BASE_POLICY_DECK = [
@@ -31,6 +31,17 @@ function drawPolicies(state, count) {
     cards.push(state.policyDeck.pop());
   }
   return cards;
+}
+
+/**
+ * Determines which Presidential power is granted when a fascist policy is enacted.
+ * @param {object} state Game state
+ * @returns {string|null} Power constant
+ */
+function getGrantedPower(state) {
+  const mapping = FASCIST_POWERS[state.settings.playerCount] || [];
+  const idx = state.enactedPolicies.fascist - 1; // array index for newly enacted policy
+  return mapping[idx] || POWERS.NONE;
 }
 
 /**
@@ -92,6 +103,9 @@ function startGame(room) {
     lastChancellorId: null,
     policyHand: null,
     policyStep: null,
+    pendingPower: null,
+    powerPresidentId: null,
+    investigatedIds: [],
   };
 }
 
@@ -212,9 +226,22 @@ function processPolicy(room, policy) {
   const victory = checkVictory(state);
 
   state.chancellorIndex = null;
-  state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+
   if (!victory) {
-    state.phase = PHASES.NOMINATE;
+    if (policy === 'FASCIST') {
+      const power = getGrantedPower(state);
+      if (power && power !== POWERS.NONE) {
+        state.pendingPower = power;
+        state.powerPresidentId = state.players[state.presidentIndex].id;
+        state.phase = PHASES.POWER;
+      } else {
+        state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+        state.phase = PHASES.NOMINATE;
+      }
+    } else {
+      state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+      state.phase = PHASES.NOMINATE;
+    }
   }
 
   return {
@@ -276,6 +303,39 @@ function handlePolicyChoice(room, playerId, policy) {
   return null;
 }
 
+/**
+ * Handles the execution of a Presidential power.
+ * Currently only implements Investigate Loyalty.
+ * @param {object} room Room containing the game state
+ * @param {string} playerId Acting player's socket id (President)
+ * @param {object} action Action details from the client
+ * @returns {object|null} result of the power
+ */
+function handlePower(room, playerId, action) {
+  const state = room.game;
+  if (!state || state.phase !== PHASES.POWER || !state.pendingPower) return null;
+  if (playerId !== state.powerPresidentId) return null;
+
+  if (state.pendingPower === POWERS.INVESTIGATE) {
+    const target = state.players.find((p) => p.id === action.targetId && p.alive);
+    if (!target) return null;
+    if (state.investigatedIds.includes(target.id)) return null;
+    state.investigatedIds.push(target.id);
+    const membership = target.role === ROLES.LIBERAL ? 'LIBERAL' : 'FASCIST';
+    state.history.push({ type: 'INVESTIGATE', president: playerId, target: target.id });
+
+    // cleanup and advance round
+    state.pendingPower = null;
+    state.powerPresidentId = null;
+    state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
+    state.phase = PHASES.NOMINATE;
+
+    return { power: POWERS.INVESTIGATE, targetId: target.id, membership };
+  }
+
+  return null;
+}
+
 module.exports = {
   startGame,
   handleVote,
@@ -283,5 +343,6 @@ module.exports = {
   nominateChancellor,
   beginPolicyPhase,
   handlePolicyChoice,
+  handlePower,
   // TODO: add more handlers for each phase and power
 };

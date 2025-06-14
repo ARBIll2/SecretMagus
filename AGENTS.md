@@ -153,7 +153,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Use mock players for testing (e.g., 5 bots).
 - Keep all UI mobile-friendly from the start.
 - Chancellor term limit logic now enforced in `gameEngine.js`.
-- Next focus: full policy draw/discard flow and presidential powers.
+- Chancellor term limit logic now enforced in `gameEngine.js`.
+- Investigate Loyalty implemented; remember to send POWER_PROMPT only to the acting President and POWER_RESULT only to them. Keep other powers pending implementation.
 
 ---
 
@@ -177,7 +178,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 ### Rule Implementation Notes
 - Term limits for Chancellor eligibility implemented (Rules: Election & Chancellor Eligibility).
 - Basic policy draw/discard flow implemented. Deck reshuffles the discard pile when fewer than three cards remain (Rules: Legislative Session, Policy Deck Management).
-- Presidential powers and veto power remain TODO.
+- Investigate Loyalty power implemented with secrecy preserved (Rules: Presidential Powers - Investigate Loyalty). Other powers and veto power remain TODO.
 
 
 
