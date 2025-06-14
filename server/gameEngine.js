@@ -203,9 +203,11 @@ function handleVote(room, playerId, vote) {
   player.hasVoted = true;
   player.vote = vote;
 
-  if (state.players.filter((p) => p.alive).every((p) => p.hasVoted)) {
-    const yesVotes = state.players.filter((p) => p.alive && p.vote === true).length;
-    const passed = yesVotes > state.players.length / 2;
+  const alivePlayers = state.players.filter((p) => p.alive);
+
+  if (alivePlayers.every((p) => p.hasVoted)) {
+    const yesVotes = alivePlayers.filter((p) => p.vote === true).length;
+    const passed = yesVotes > alivePlayers.length / 2;
 
     state.history.push({
       type: 'VOTE',

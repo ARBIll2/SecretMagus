@@ -28,9 +28,9 @@
 
 ## Completed in this wave
 - Added ability for players to leave a room before the game starts. Client UI now includes "Leave Room" buttons and server handles `LEAVE_ROOM` events.
+- Fixed vote majority logic to count only alive players when determining if an election passes.
 
 ## Next Steps
-- Fix vote majority logic to count only alive players when determining if an election passes.
 - Broadcast results of auto policies triggered by the election tracker so all clients stay in sync.
 - Handle players leaving or disconnecting during an active game and decide whether play continues or ends.
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.

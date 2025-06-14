@@ -213,6 +213,7 @@ Codex agents and contributors must ensure every gameplay feature aligns with **R
 8. **Eligibility and Term Limits** – Enforce that the last elected President and Chancellor cannot be nominated as Chancellor (except when only five players remain, where only the last Chancellor is barred).
 9. **Logging & Validation** – Log all state changes and cross-check against RULES.md when implementing new features.
 10. **Executed Players** – Server enforces that executed players cannot vote or hold office. UI still needs cues and restrictions.
+11. **Vote Majority** – Count only alive players when determining if a government is elected (Rules: Election step 4).
 
 Before merging any change, verify the checklist above and update tests to cover new logic.
 
@@ -225,17 +226,16 @@ Feature | Status | Notes
 Room creation & join flow | ✅ | Rooms can be created and joined from the lobby
 Role assignment | ✅ | Roles assigned on game start with correct knowledge share
 Game phases (nominate → vote → policy) | Partial | Basic flow works but auto-policy from failed elections is not broadcast
-Vote counting | Partial | Majority check uses total players instead of alive players
+Vote counting | ✅ | Majority check counts only alive players
 Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles the discard pile when needed
 Fascist powers | ✅ | Investigate, Special Election, Policy Peek, Execution and Veto implemented
 Win condition checks | ✅ | All victory conditions evaluated in the engine
 Game state broadcast & sync | Partial | Core events sent via socket but some state changes are not emitted
 UI reactivity | Partial | React components exist but largely debug oriented
 Socket message handling | ✅ | Client and server handle defined message types
-Rules compliance (RULES.md) | Partial | Most rules enforced; vote majority bug and disconnect logic remain
+Rules compliance (RULES.md) | Partial | Most rules enforced; disconnect logic remains
 
 Identified blockers to reach playtest:
-- Correct vote majority logic
 - Broadcast auto policy results
 - Handle disconnects mid-game
 - Improve phase-specific UI
