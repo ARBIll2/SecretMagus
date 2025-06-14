@@ -8,7 +8,7 @@ import { PHASES } from '../shared/constants.js';
  * TODO: Add nomination, voting, policy selection, and powers UI.
  */
 export default function Game() {
-  const { socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId } = useContext(GameStateContext);
+  const { socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt } = useContext(GameStateContext);
 
   const roomCode = gameState?.code || gameState?.roomCode;
 
@@ -21,6 +21,18 @@ export default function Game() {
   const choosePolicy = (policy) => {
     if (socket && roomCode) {
       socket.emit(MESSAGE_TYPES.POLICY_CHOICE, { roomCode, policy });
+    }
+  };
+
+  const requestVeto = () => {
+    if (socket && roomCode) {
+      socket.emit(MESSAGE_TYPES.POLICY_CHOICE, { roomCode, veto: true });
+    }
+  };
+
+  const vetoDecision = (accept) => {
+    if (socket && roomCode) {
+      socket.emit(MESSAGE_TYPES.VETO_DECISION, { roomCode, accept });
     }
   };
 
@@ -76,11 +88,22 @@ export default function Game() {
       {policyPrompt && !gameState.gameOver && (
         <div>
           <h3>Select Policy</h3>
-          {policyPrompt.map((p, idx) => (
+          {policyPrompt.policies.map((p, idx) => (
             <button key={idx} onClick={() => choosePolicy(p)}>
               {p}
             </button>
           ))}
+          {policyPrompt.canVeto && (
+            <button onClick={requestVeto}>Request Veto</button>
+          )}
+        </div>
+      )}
+
+      {vetoPrompt && !gameState.gameOver && (
+        <div>
+          <h3>Approve Veto?</h3>
+          <button onClick={() => vetoDecision(true)}>Yes</button>
+          <button onClick={() => vetoDecision(false)}>No</button>
         </div>
       )}
 

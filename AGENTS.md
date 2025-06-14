@@ -106,6 +106,8 @@ Use a `messageType` dispatch pattern:
 - `NOMINATE_CHANCELLOR`
 - `CAST_VOTE`
 - `POLICY_CHOICE`
+- `VETO_REQUEST`
+- `VETO_DECISION`
 - `USE_POWER`
 
 ### Server → Client
@@ -116,6 +118,8 @@ Use a `messageType` dispatch pattern:
 - `VOTE_RESULT`
 - `POLICY_PROMPT`
 - `POLICY_RESULT`
+- `VETO_PROMPT`
+- `VETO_RESULT`
 - `POWER_PROMPT`
 - `GAME_OVER`
 
@@ -158,6 +162,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Special Election power implemented. The President selects any alive player for the next Presidential Candidate. After that election, presidency returns left of the original President.
 - Policy Peek power implemented. The top three policies are shown privately to the President.
 - Execution power implemented. The President may kill a player; if Hitler is executed the Liberals win. POWER_RESULT is broadcast to all players.
+- Veto power implemented. Chancellor may request veto after five Fascist policies; President decides and tracker advances if accepted.
 
 ---
 

@@ -111,23 +111,61 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
 
-  socket.on(MESSAGE_TYPES.POLICY_CHOICE, ({ roomCode, policy }) => {
+  socket.on(MESSAGE_TYPES.POLICY_CHOICE, ({ roomCode, policy, veto }) => {
     const room = roomManager.getRoomByCode(roomCode);
     if (!room) {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const outcome = gameEngine.handlePolicyChoice(room, socket.id, policy);
+    const outcome = gameEngine.handlePolicyChoice(room, socket.id, { policy, veto });
     if (outcome) {
       if (outcome.promptPlayerId) {
-        io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
-          policies: outcome.policies,
-        });
+        if (outcome.veto) {
+          io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.VETO_PROMPT);
+        } else {
+          io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
+            policies: outcome.policies,
+            canVeto: outcome.canVeto,
+          });
+        }
       }
       if (outcome.enacted) {
         io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.result);
         if (outcome.result.gameOver) {
           io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.result.gameOver);
+        }
+        if (room.game.phase === PHASES.POWER) {
+          io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+            power: room.game.pendingPower,
+            players: room.game.players
+              .filter((p) => p.alive)
+              .map((p) => ({ id: p.id, name: p.name })),
+          });
+        }
+      }
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+    }
+  });
+
+  socket.on(MESSAGE_TYPES.VETO_DECISION, ({ roomCode, accept }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+    const outcome = gameEngine.handleVetoDecision(room, socket.id, accept);
+    if (outcome) {
+      io.to(roomCode).emit(MESSAGE_TYPES.VETO_RESULT, { accepted: outcome.accepted });
+      if (outcome.promptPlayerId) {
+        io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
+          policies: outcome.policies,
+          canVeto: outcome.canVeto,
+        });
+      }
+      if (outcome.autoResult) {
+        io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.autoResult);
+        if (outcome.autoResult.gameOver) {
+          io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
         }
         if (room.game.phase === PHASES.POWER) {
           io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {

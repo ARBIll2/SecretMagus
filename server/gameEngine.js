@@ -285,7 +285,7 @@ function beginPolicyPhase(room) {
  * @param {string} policy Policy card chosen
  * @returns {object|null} Resulting action
  */
-function handlePolicyChoice(room, playerId, policy) {
+function handlePolicyChoice(room, playerId, choice) {
   const state = room.game;
   if (!state || state.phase !== PHASES.POLICY || !state.policyHand) return null;
 
@@ -294,28 +294,85 @@ function handlePolicyChoice(room, playerId, policy) {
 
   if (state.policyStep === 'PRESIDENT') {
     if (playerId !== president.id) return null;
-    const idx = state.policyHand.indexOf(policy);
+    const idx = state.policyHand.indexOf(choice.policy);
     if (idx === -1) return null;
     state.policyHand.splice(idx, 1);
-    state.discardPile.push(policy);
+    state.discardPile.push(choice.policy);
     state.policyStep = 'CHANCELLOR';
-    return { promptPlayerId: chancellor.id, policies: [...state.policyHand] };
+    return {
+      promptPlayerId: chancellor.id,
+      policies: [...state.policyHand],
+      canVeto: state.enactedPolicies.fascist >= 5,
+    };
   }
 
   if (state.policyStep === 'CHANCELLOR') {
     if (playerId !== chancellor.id) return null;
-    const idx = state.policyHand.indexOf(policy);
+    if (choice.veto) {
+      if (state.enactedPolicies.fascist < 5) return null;
+      state.policyStep = 'VETO';
+      return { veto: true, promptPlayerId: president.id };
+    }
+    const idx = state.policyHand.indexOf(choice.policy);
     if (idx === -1) return null;
     state.policyHand.splice(idx, 1);
     const discarded = state.policyHand.pop();
     state.discardPile.push(discarded);
-    const result = processPolicy(room, policy);
+    const result = processPolicy(room, choice.policy);
     state.policyHand = null;
     state.policyStep = null;
     return { enacted: true, result };
   }
 
   return null;
+}
+
+/**
+ * Handles the President's decision on a veto request.
+ * @param {object} room Room containing the game state
+ * @param {string} playerId Socket id of the acting President
+ * @param {boolean} accept Whether the President accepts the veto
+ * @returns {object|null} Resulting action
+ */
+function handleVetoDecision(room, playerId, accept) {
+  const state = room.game;
+  if (!state || state.phase !== PHASES.POLICY || state.policyStep !== 'VETO')
+    return null;
+
+  const president = state.players[state.presidentIndex];
+  if (president.id !== playerId) return null;
+  const chancellor = state.players[state.chancellorIndex];
+
+  if (accept) {
+    state.discardPile.push(...state.policyHand);
+    state.policyHand = null;
+    state.policyStep = null;
+    state.history.push({ type: 'VETO', accepted: true });
+    state.failedElections += 1;
+
+    let autoResult = null;
+    if (state.failedElections >= 3) {
+      const autoPolicy = drawPolicies(state, 1)[0];
+      autoResult = processPolicy(room, autoPolicy);
+      state.failedElections = 0;
+      state.lastPresidentId = null;
+      state.lastChancellorId = null;
+    } else {
+      advancePresidency(state);
+      state.phase = PHASES.NOMINATE;
+    }
+
+    return { accepted: true, autoResult };
+  }
+
+  state.policyStep = 'CHANCELLOR';
+  state.history.push({ type: 'VETO', accepted: false });
+  return {
+    accepted: false,
+    promptPlayerId: chancellor.id,
+    policies: [...state.policyHand],
+    canVeto: true,
+  };
 }
 
 /**
@@ -415,6 +472,7 @@ module.exports = {
   nominateChancellor,
   beginPolicyPhase,
   handlePolicyChoice,
+  handleVetoDecision,
   handlePower,
   // TODO: add more handlers for each phase and power
 };
