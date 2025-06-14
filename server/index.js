@@ -102,6 +102,13 @@ io.on('connection', (socket) => {
       if (result.gameOver) {
         io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
       }
+      if (result.autoResult) {
+        logEvent(roomCode, 'POLICY_ENACTED', result.autoResult.enactedPolicies);
+        io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, result.autoResult);
+        if (result.autoResult.gameOver) {
+          io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.autoResult.gameOver);
+        }
+      }
       if (room.game.phase === PHASES.POLICY) {
         const policies = gameEngine.beginPolicyPhase(room);
         const presidentId = room.game.players[room.game.presidentIndex].id;

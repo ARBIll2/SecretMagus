@@ -208,6 +208,7 @@ function handleVote(room, playerId, vote) {
   if (alivePlayers.every((p) => p.hasVoted)) {
     const yesVotes = alivePlayers.filter((p) => p.vote === true).length;
     const passed = yesVotes > alivePlayers.length / 2;
+    let autoResult = null;
 
     state.history.push({
       type: 'VOTE',
@@ -244,19 +245,21 @@ function handleVote(room, playerId, vote) {
       state.failedElections += 1;
       if (state.failedElections >= 3) {
         const autoPolicy = drawPolicies(state, 1)[0];
-        processPolicy(room, autoPolicy);
+        autoResult = processPolicy(room, autoPolicy);
         state.failedElections = 0;
         state.lastPresidentId = null;
         state.lastChancellorId = null;
+      } else {
+        advancePresidency(state);
+        state.phase = PHASES.NOMINATE;
       }
-      advancePresidency(state);
-      state.phase = PHASES.NOMINATE;
     }
 
     return {
       completed: true,
       passed,
       votes: state.history[state.history.length - 1].votes,
+      ...(autoResult ? { autoResult } : {}),
     };
   }
 

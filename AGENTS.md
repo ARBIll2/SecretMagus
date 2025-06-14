@@ -195,6 +195,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Executed player restrictions enforced. Dead players cannot vote or hold office and presidency skips them. UI still needs cues.
 - Lobby now displays joined players and room code. Only the host may start the game once five or more players have joined. Clients stay in the lobby until the `GAME_START` message arrives.
 - Players may leave a room before the game starts via `LEAVE_ROOM`. Disconnects during an active game are not yet handled beyond removal from the room.
+- Auto policy results from the Election Tracker are now broadcast to all players to maintain sync.
 
 
 
@@ -225,7 +226,7 @@ Feature | Status | Notes
 --- | --- | ---
 Room creation & join flow | ✅ | Rooms can be created and joined from the lobby
 Role assignment | ✅ | Roles assigned on game start with correct knowledge share
-Game phases (nominate → vote → policy) | Partial | Basic flow works but auto-policy from failed elections is not broadcast
+Game phases (nominate → vote → policy) | ✅ | Auto policy results broadcast and core flow works
 Vote counting | ✅ | Majority check counts only alive players
 Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles the discard pile when needed
 Fascist powers | ✅ | Investigate, Special Election, Policy Peek, Execution and Veto implemented
@@ -235,8 +236,7 @@ UI reactivity | Partial | React components exist but largely debug oriented
 Socket message handling | ✅ | Client and server handle defined message types
 Rules compliance (RULES.md) | Partial | Most rules enforced; disconnect logic remains
 
-Identified blockers to reach playtest:
-- Broadcast auto policy results
+- Identified blockers to reach playtest:
 - Handle disconnects mid-game
 - Improve phase-specific UI
 - Add automated tests for rule enforcement
