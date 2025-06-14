@@ -4,6 +4,13 @@
     "socket.io": "^4.8.1"
   },
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "jest": "^30.0.0"
   }
 }
