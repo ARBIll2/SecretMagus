@@ -193,6 +193,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Initial fascist knowledge reveal implemented according to player count (Rules: Setup - Eyes Closed Sequence).
 - Basic logging added on server for game start, nominations, votes, policies, vetoes, and powers.
 - Executed player restrictions enforced. Dead players cannot vote or hold office and presidency skips them. UI still needs cues.
+- Lobby now displays joined players and room code. Only the host may start the game once five or more players have joined. Clients stay in the lobby until the `GAME_START` message arrives.
 
 
 

@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import Lobby from './Lobby.jsx';
 import Game from './Game.jsx';
-import GameStateProvider from './GameStateContext.js';
+import GameStateProvider, { GameStateContext } from './GameStateContext.js';
 
 /**
  * Root component. Switches between Lobby and Game views.
  * TODO: Add proper routing or state machine to manage phases.
  */
-export default function App() {
-  const [inGame, setInGame] = useState(false); // replace with real state logic
+function AppContent() {
+  const { gameState } = useContext(GameStateContext);
+  const inGame = !!gameState?.game;
+  return inGame ? <Game /> : <Lobby />;
+}
 
+export default function App() {
   return (
     <GameStateProvider>
-      {inGame ? <Game /> : <Lobby onStart={() => setInGame(true)} />}
+      <AppContent />
     </GameStateProvider>
   );
 }
