@@ -80,6 +80,9 @@ io.on('connection', (socket) => {
         passed: result.passed,
         votes: result.votes,
       });
+      if (result.gameOver) {
+        io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
+      }
       if (room.game.phase === PHASES.POLICY) {
         io.to(roomCode).emit(MESSAGE_TYPES.POLICY_PROMPT);
       }
@@ -95,6 +98,9 @@ io.on('connection', (socket) => {
     }
     const result = gameEngine.processPolicy(room, policy);
     io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, result);
+    if (result.gameOver) {
+      io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
+    }
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
 

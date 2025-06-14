@@ -15,6 +15,23 @@ function createPolicyDeck() {
 }
 
 /**
+ * Checks if any win conditions are met.
+ * @param {object} state Game state
+ * @returns {object|null} result if game over
+ */
+function checkVictory(state) {
+  if (state.enactedPolicies.liberal >= 5) {
+    state.phase = PHASES.GAME_OVER;
+    return { winner: 'LIBERALS', reason: 'LIBERAL_POLICIES' };
+  }
+  if (state.enactedPolicies.fascist >= 6) {
+    state.phase = PHASES.GAME_OVER;
+    return { winner: 'FASCISTS', reason: 'FASCIST_POLICIES' };
+  }
+  return null;
+}
+
+/**
  * Example structure of a game state object.
  */
 // const exampleState = {
@@ -104,6 +121,19 @@ function handleVote(room, playerId, vote) {
     });
 
     if (passed) {
+      const chancellor = state.players[state.chancellorIndex];
+      if (
+        chancellor.role === ROLES.HITLER &&
+        state.enactedPolicies.fascist >= 3
+      ) {
+        state.phase = PHASES.GAME_OVER;
+        return {
+          completed: true,
+          passed,
+          votes: state.history[state.history.length - 1].votes,
+          gameOver: { winner: 'FASCISTS', reason: 'HITLER_ELECTED' },
+        };
+      }
       state.phase = PHASES.POLICY;
       state.failedElections = 0;
     } else {
@@ -142,12 +172,17 @@ function processPolicy(room, policy) {
 
   state.history.push({ type: 'POLICY', policy });
 
+  const victory = checkVictory(state);
+
   state.chancellorIndex = null;
   state.presidentIndex = (state.presidentIndex + 1) % state.players.length;
-  state.phase = PHASES.NOMINATE;
+  if (!victory) {
+    state.phase = PHASES.NOMINATE;
+  }
 
   return {
     enactedPolicies: { ...state.enactedPolicies },
+    ...(victory ? { gameOver: victory } : {}),
   };
 }
 

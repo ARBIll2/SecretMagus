@@ -15,6 +15,7 @@ const PHASES = Object.freeze({
   VOTE: 'VOTE',
   POLICY: 'POLICY',
   POWER: 'POWER',
+  GAME_OVER: 'GAME_OVER',
 });
 
 // Mapping of player count to roles
