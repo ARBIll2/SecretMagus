@@ -64,6 +64,14 @@ export default function GameStateProvider({ children }) {
       }));
     });
 
+    sock.on(MESSAGE_TYPES.GAME_OVER, (result) => {
+      setGameState((prev) => ({
+        ...prev,
+        gameOver: result,
+        game: { ...prev.game, phase: PHASES.GAME_OVER },
+      }));
+    });
+
     return () => {
       sock.disconnect();
     };

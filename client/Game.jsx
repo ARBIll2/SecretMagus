@@ -33,9 +33,16 @@ export default function Game() {
   return (
     <div>
       <h2>Game In Progress</h2>
+      {gameState.gameOver && (
+        <div>
+          <h3>Game Over</h3>
+          <p>Winner: {gameState.gameOver.winner}</p>
+          <p>Reason: {gameState.gameOver.reason}</p>
+        </div>
+      )}
       {role && <p>Your role: {role}</p>}
 
-      {gameState?.game?.phase === PHASES.NOMINATE && (
+      {!gameState.gameOver && gameState?.game?.phase === PHASES.NOMINATE && (
         playerId === gameState.game.players[gameState.game.presidentIndex]?.id ? (
           <div>
             <h3>Nominate Chancellor</h3>
@@ -52,7 +59,7 @@ export default function Game() {
         )
       )}
 
-      {gameState?.game?.phase === PHASES.VOTE && (
+      {!gameState.gameOver && gameState?.game?.phase === PHASES.VOTE && (
         <div>
           <h3>Cast Your Vote</h3>
           <button onClick={() => castVote(true)}>Ja!</button>
@@ -60,7 +67,7 @@ export default function Game() {
         </div>
       )}
 
-      {policyPrompt && (
+      {policyPrompt && !gameState.gameOver && (
         <div>
           <h3>Select Policy</h3>
           <button onClick={() => choosePolicy('LIBERAL')}>Liberal</button>

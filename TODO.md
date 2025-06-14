@@ -11,8 +11,9 @@
 - Added client handlers for role assignment, vote and policy events.
 - Created basic UI elements for casting votes and selecting policies.
 - Added nomination phase logic with server handler and React UI.
+- Added win condition checks and GAME_OVER handling on server and client.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
-- Add server handlers for special powers and win conditions.
+- Implement server logic for special powers (investigate, execute, etc.).
 - Write unit tests for game engine, utilities, and room management.
