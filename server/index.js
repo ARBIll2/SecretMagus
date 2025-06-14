@@ -84,7 +84,9 @@ io.on('connection', (socket) => {
         io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
       }
       if (room.game.phase === PHASES.POLICY) {
-        io.to(roomCode).emit(MESSAGE_TYPES.POLICY_PROMPT);
+        const policies = gameEngine.beginPolicyPhase(room);
+        const presidentId = room.game.players[room.game.presidentIndex].id;
+        io.to(presidentId).emit(MESSAGE_TYPES.POLICY_PROMPT, { policies });
       }
     }
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
@@ -96,12 +98,21 @@ io.on('connection', (socket) => {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const result = gameEngine.processPolicy(room, policy);
-    io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, result);
-    if (result.gameOver) {
-      io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
+    const outcome = gameEngine.handlePolicyChoice(room, socket.id, policy);
+    if (outcome) {
+      if (outcome.promptPlayerId) {
+        io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
+          policies: outcome.policies,
+        });
+      }
+      if (outcome.enacted) {
+        io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.result);
+        if (outcome.result.gameOver) {
+          io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.result.gameOver);
+        }
+      }
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
     }
-    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
 
   // TODO: add more game event handlers

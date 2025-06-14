@@ -13,9 +13,10 @@
 - Added nomination phase logic with server handler and React UI.
 - Added win condition checks and GAME_OVER handling on server and client.
 - Enforced Chancellor eligibility term limits according to rules.
+- Implemented policy draw/discard flow with deck reshuffle and updated client prompts.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
 - Implement server logic for special powers (investigate, execute, etc.).
 - Write unit tests for game engine, utilities, and room management.
-- Add policy draw/discard flow and deck management with reshuffle when needed.
+- Add veto power after five fascist policies.

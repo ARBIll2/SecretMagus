@@ -12,7 +12,7 @@ export default function GameStateProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [gameState, setGameState] = useState({});
   const [role, setRole] = useState(null);
-  const [policyPrompt, setPolicyPrompt] = useState(false);
+  const [policyPrompt, setPolicyPrompt] = useState(null);
   const [playerId, setPlayerId] = useState(null);
 
   useEffect(() => {
@@ -49,12 +49,12 @@ export default function GameStateProvider({ children }) {
       setGameState((prev) => ({ ...prev, lastVote: result }));
     });
 
-    sock.on(MESSAGE_TYPES.POLICY_PROMPT, () => {
-      setPolicyPrompt(true);
+    sock.on(MESSAGE_TYPES.POLICY_PROMPT, (data) => {
+      setPolicyPrompt(data.policies);
     });
 
     sock.on(MESSAGE_TYPES.POLICY_RESULT, (res) => {
-      setPolicyPrompt(false);
+      setPolicyPrompt(null);
       setGameState((prev) => ({
         ...prev,
         game: {

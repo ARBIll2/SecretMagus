@@ -15,6 +15,25 @@ function createPolicyDeck() {
 }
 
 /**
+ * Draws a number of policy cards from the deck, reshuffling the discard pile
+ * if necessary.
+ * @param {object} state Game state
+ * @param {number} count Number of cards to draw
+ * @returns {string[]} Array of policy cards
+ */
+function drawPolicies(state, count) {
+  while (state.policyDeck.length < count) {
+    state.policyDeck = shuffleDeck([...state.policyDeck, ...state.discardPile]);
+    state.discardPile = [];
+  }
+  const cards = [];
+  for (let i = 0; i < count; i++) {
+    cards.push(state.policyDeck.pop());
+  }
+  return cards;
+}
+
+/**
  * Checks if any win conditions are met.
  * @param {object} state Game state
  * @returns {object|null} result if game over
@@ -65,11 +84,14 @@ function startGame(room) {
     chancellorIndex: null,
     failedElections: 0,
     policyDeck: createPolicyDeck(),
+    discardPile: [],
     enactedPolicies: { liberal: 0, fascist: 0 },
     history: [],
     settings: { playerCount: room.players.length },
     lastPresidentId: null,
     lastChancellorId: null,
+    policyHand: null,
+    policyStep: null,
   };
 }
 
@@ -152,7 +174,7 @@ function handleVote(room, playerId, vote) {
     } else {
       state.failedElections += 1;
       if (state.failedElections >= 3) {
-        const autoPolicy = state.policyDeck.pop();
+        const autoPolicy = drawPolicies(state, 1)[0];
         processPolicy(room, autoPolicy);
         state.failedElections = 0;
         state.lastPresidentId = null;
@@ -201,10 +223,65 @@ function processPolicy(room, policy) {
   };
 }
 
+/**
+ * Begins the legislative session by drawing three policies for the President.
+ * @param {object} room Room containing the game state
+ * @returns {string[]} Policies drawn for the President
+ */
+function beginPolicyPhase(room) {
+  const state = room.game;
+  state.policyHand = drawPolicies(state, 3);
+  state.policyStep = 'PRESIDENT';
+  return [...state.policyHand];
+}
+
+/**
+ * Handles policy choices from President and Chancellor during the legislative
+ * session.
+ * @param {object} room Room containing the game state
+ * @param {string} playerId Socket id of the acting player
+ * @param {string} policy Policy card chosen
+ * @returns {object|null} Resulting action
+ */
+function handlePolicyChoice(room, playerId, policy) {
+  const state = room.game;
+  if (!state || state.phase !== PHASES.POLICY || !state.policyHand) return null;
+
+  const president = state.players[state.presidentIndex];
+  const chancellor = state.players[state.chancellorIndex];
+
+  if (state.policyStep === 'PRESIDENT') {
+    if (playerId !== president.id) return null;
+    const idx = state.policyHand.indexOf(policy);
+    if (idx === -1) return null;
+    state.policyHand.splice(idx, 1);
+    state.discardPile.push(policy);
+    state.policyStep = 'CHANCELLOR';
+    return { promptPlayerId: chancellor.id, policies: [...state.policyHand] };
+  }
+
+  if (state.policyStep === 'CHANCELLOR') {
+    if (playerId !== chancellor.id) return null;
+    const idx = state.policyHand.indexOf(policy);
+    if (idx === -1) return null;
+    state.policyHand.splice(idx, 1);
+    const discarded = state.policyHand.pop();
+    state.discardPile.push(discarded);
+    const result = processPolicy(room, policy);
+    state.policyHand = null;
+    state.policyStep = null;
+    return { enacted: true, result };
+  }
+
+  return null;
+}
+
 module.exports = {
   startGame,
   handleVote,
   processPolicy,
   nominateChancellor,
+  beginPolicyPhase,
+  handlePolicyChoice,
   // TODO: add more handlers for each phase and power
 };
