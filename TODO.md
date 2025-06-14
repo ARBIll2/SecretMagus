@@ -34,8 +34,9 @@
 - Tracked current nomination on the client and display which players are up for election.
 - Added vote result display showing each player's Ja!/Nein choice.
 - Implemented board UI showing enacted policies and election tracker progress.
+- Added PlayerList component showing seating order with President and Chancellor markers.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
 - Write unit tests for the game engine and helpers to enforce rule compliance and prevent regressions.
-- Add player list component to display seating order and indicate current President and Chancellor.
+- Improve UI styling for board and player list.
