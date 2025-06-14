@@ -142,6 +142,7 @@ Right now we go text-based, but future UI components can follow this framework:
 ### Planned Components:
 - `PlayerList`: Shows seating order and current roles (public info only)
 - `PolicyTracker`: Display current number of enacted policies
+- `Board`: Combines policy tracks and election tracker for quick reference
 - `VotePanel`: Allows player to vote Yes/No
 - `NominationPanel`: President picks a Chancellor
 - `PolicyHand`: Policy selection (President/Chancellor)
@@ -197,6 +198,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Players may leave a room before the game starts via `LEAVE_ROOM`. Disconnecting during a game now marks that player as executed and ends the game if Hitler disconnects.
 - Auto policy results from the Election Tracker are now broadcast to all players to maintain sync.
 - Client tracks current nomination and displays vote results to improve transparency.
+- Basic board UI added showing policy tracks and election tracker progress.
 
 
 
@@ -233,7 +235,7 @@ Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles the discard pi
 Fascist powers | ✅ | Investigate, Special Election, Policy Peek, Execution and Veto implemented
 Win condition checks | ✅ | All victory conditions evaluated in the engine
 Game state broadcast & sync | Partial | Core events sent via socket but some state changes are not emitted
-UI reactivity | Partial | React components exist but largely debug oriented; nomination and vote results now shown
+UI reactivity | Partial | Basic board component added; nomination and vote results shown but styling minimal
 Socket message handling | ✅ | Client and server handle defined message types
 Rules compliance (RULES.md) | Partial | Most rules enforced; disconnecting players are treated as executions
 
