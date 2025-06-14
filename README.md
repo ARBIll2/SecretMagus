@@ -14,7 +14,7 @@ This project lays the groundwork for a multiplayer implementation of **Secret Hi
    ```
 2. Run the development server:
    ```bash
-   node server/index.js
+   npm start
    ```
 3. Open `client/index.html` in a browser with a bundler or dev server of choice.
 

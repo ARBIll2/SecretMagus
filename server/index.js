@@ -20,9 +20,30 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  // TODO: wire up event handlers for JOIN_ROOM, START_GAME, etc.
+  socket.on(MESSAGE_TYPES.CREATE_ROOM, ({ name }) => {
+    const player = { id: socket.id, name };
+    const code = roomManager.createRoom(player);
+    socket.join(code);
+    io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, roomManager.getRoomByCode(code));
+  });
+
+  socket.on(MESSAGE_TYPES.JOIN_ROOM, ({ name, roomCode }) => {
+    const player = { id: socket.id, name };
+    if (roomManager.joinRoom(roomCode, player)) {
+      socket.join(roomCode);
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, roomManager.getRoomByCode(roomCode));
+    } else {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+    }
+  });
+
+  // TODO: add START_GAME and other game event handlers
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
+    roomManager.listRooms().forEach((code) => {
+      roomManager.removePlayer(code, socket.id);
+      io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, roomManager.getRoomByCode(code));
+    });
   });
 });
 
