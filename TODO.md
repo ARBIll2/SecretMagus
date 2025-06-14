@@ -18,8 +18,8 @@
 - Added Special Election presidential power with server logic and client UI.
 - Implemented Policy Peek power with automatic handling.
 - Implemented Execution power with victory checks.
+- Added veto power after five fascist policies with request/decision flow.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
 - Write unit tests for game engine, utilities, and room management.
-- Add veto power after five fascist policies.

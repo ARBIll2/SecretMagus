@@ -13,6 +13,7 @@ export default function GameStateProvider({ children }) {
   const [gameState, setGameState] = useState({});
   const [role, setRole] = useState(null);
   const [policyPrompt, setPolicyPrompt] = useState(null);
+  const [vetoPrompt, setVetoPrompt] = useState(false);
   const [powerPrompt, setPowerPrompt] = useState(null);
   const [powerResult, setPowerResult] = useState(null);
   const [playerId, setPlayerId] = useState(null);
@@ -52,7 +53,7 @@ export default function GameStateProvider({ children }) {
     });
 
     sock.on(MESSAGE_TYPES.POLICY_PROMPT, (data) => {
-      setPolicyPrompt(data.policies);
+      setPolicyPrompt({ policies: data.policies, canVeto: data.canVeto });
     });
 
     sock.on(MESSAGE_TYPES.POLICY_RESULT, (res) => {
@@ -75,6 +76,15 @@ export default function GameStateProvider({ children }) {
       setPowerResult(res);
     });
 
+    sock.on(MESSAGE_TYPES.VETO_PROMPT, () => {
+      setVetoPrompt(true);
+    });
+
+    sock.on(MESSAGE_TYPES.VETO_RESULT, () => {
+      setVetoPrompt(false);
+      setPolicyPrompt(null);
+    });
+
     sock.on(MESSAGE_TYPES.GAME_OVER, (result) => {
       setGameState((prev) => ({
         ...prev,
@@ -89,7 +99,7 @@ export default function GameStateProvider({ children }) {
   }, []);
 
   return (
-    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId }}>
+    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt }}>
       {children}
     </GameStateContext.Provider>
   );
