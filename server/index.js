@@ -37,7 +37,21 @@ io.on('connection', (socket) => {
     }
   });
 
-  // TODO: add START_GAME and other game event handlers
+  socket.on(MESSAGE_TYPES.START_GAME, ({ roomCode }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+    gameEngine.startGame(room);
+    io.to(roomCode).emit(MESSAGE_TYPES.GAME_START, room.game);
+    room.players.forEach((p) => {
+      io.to(p.id).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, { role: p.role });
+    });
+    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+  });
+
+  // TODO: add more game event handlers
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     roomManager.listRooms().forEach((code) => {

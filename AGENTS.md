@@ -158,12 +158,18 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 ## 🧱 Suggested Tasks for Codex
 1. Scaffold `/client` and `/server` folders with entry files. ✅
 2. Implement `roomManager.js` to handle player joins and room tracking. ✅
-3. Build `gameEngine.js` to manage the full game state lifecycle.
+3. Build `gameEngine.js` to manage the full game state lifecycle. ✅
 4. Set up `socket.io` server and connect React client.
 5. Create basic UI for joining/creating room and nickname entry.
 6. Implement game phases one at a time with full broadcast logic.
 7. Write tests for role assignment, voting logic, and win condition checks.
 
 👉 Keep `TODO.md` updated with ongoing progress and upcoming tasks.
+
+### Development Best Practices
+- Run `npm start` to launch the server during local development.
+- Keep the game logic strictly on the server; clients only send user actions.
+- Add unit tests for utilities and the game engine as they are implemented.
+- Regularly update `TODO.md` when a step is completed or a new one appears.
 
 
