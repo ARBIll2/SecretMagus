@@ -88,6 +88,14 @@ io.on('connection', (socket) => {
         const presidentId = room.game.players[room.game.presidentIndex].id;
         io.to(presidentId).emit(MESSAGE_TYPES.POLICY_PROMPT, { policies });
       }
+      if (room.game.phase === PHASES.POWER) {
+        io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+          power: room.game.pendingPower,
+          players: room.game.players
+            .filter((p) => p.alive && p.id !== room.game.powerPresidentId)
+            .map((p) => ({ id: p.id, name: p.name })),
+        });
+      }
     }
     io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
   });
@@ -110,7 +118,28 @@ io.on('connection', (socket) => {
         if (outcome.result.gameOver) {
           io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.result.gameOver);
         }
+        if (room.game.phase === PHASES.POWER) {
+          io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+            power: room.game.pendingPower,
+            players: room.game.players
+              .filter((p) => p.alive && p.id !== room.game.powerPresidentId)
+              .map((p) => ({ id: p.id, name: p.name })),
+          });
+        }
       }
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+    }
+  });
+
+  socket.on(MESSAGE_TYPES.USE_POWER, ({ roomCode, action }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+    const result = gameEngine.handlePower(room, socket.id, action);
+    if (result) {
+      io.to(socket.id).emit(MESSAGE_TYPES.POWER_RESULT, result);
       io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
     }
   });

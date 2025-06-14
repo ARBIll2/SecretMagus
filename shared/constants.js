@@ -18,6 +18,62 @@ const PHASES = Object.freeze({
   GAME_OVER: 'GAME_OVER',
 });
 
+// Presidential powers
+const POWERS = Object.freeze({
+  NONE: 'NONE',
+  INVESTIGATE: 'INVESTIGATE',
+  SPECIAL_ELECTION: 'SPECIAL_ELECTION',
+  POLICY_PEEK: 'POLICY_PEEK',
+  EXECUTION: 'EXECUTION',
+});
+
+// Mapping of fascist policy count to powers based on player count
+// Index 0 corresponds to the first enacted fascist policy, etc.
+const FASCIST_POWERS = {
+  5: [
+    POWERS.NONE,
+    POWERS.NONE,
+    POWERS.POLICY_PEEK,
+    POWERS.EXECUTION,
+    POWERS.EXECUTION,
+  ],
+  6: [
+    POWERS.NONE,
+    POWERS.NONE,
+    POWERS.POLICY_PEEK,
+    POWERS.EXECUTION,
+    POWERS.EXECUTION,
+  ],
+  7: [
+    POWERS.INVESTIGATE,
+    POWERS.INVESTIGATE,
+    POWERS.SPECIAL_ELECTION,
+    POWERS.EXECUTION,
+    POWERS.EXECUTION,
+  ],
+  8: [
+    POWERS.INVESTIGATE,
+    POWERS.INVESTIGATE,
+    POWERS.SPECIAL_ELECTION,
+    POWERS.EXECUTION,
+    POWERS.EXECUTION,
+  ],
+  9: [
+    POWERS.INVESTIGATE,
+    POWERS.INVESTIGATE,
+    POWERS.EXECUTION,
+    POWERS.SPECIAL_ELECTION,
+    POWERS.EXECUTION,
+  ],
+  10: [
+    POWERS.INVESTIGATE,
+    POWERS.INVESTIGATE,
+    POWERS.EXECUTION,
+    POWERS.SPECIAL_ELECTION,
+    POWERS.EXECUTION,
+  ],
+};
+
 // Mapping of player count to roles
 const ROLE_DISTRIBUTION = {
   5: { liberals: 3, fascists: 1, hitler: 1 },
@@ -31,5 +87,7 @@ const ROLE_DISTRIBUTION = {
 module.exports = {
   ROLES,
   PHASES,
+  POWERS,
+  FASCIST_POWERS,
   ROLE_DISTRIBUTION,
 };

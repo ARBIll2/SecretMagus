@@ -14,9 +14,10 @@
 - Added win condition checks and GAME_OVER handling on server and client.
 - Enforced Chancellor eligibility term limits according to rules.
 - Implemented policy draw/discard flow with deck reshuffle and updated client prompts.
+- Added initial implementation of Investigate Loyalty power with server handler and client prompt.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
-- Implement server logic for special powers (investigate, execute, etc.).
+- Implement remaining special powers (Special Election, Policy Peek, Execution).
 - Write unit tests for game engine, utilities, and room management.
 - Add veto power after five fascist policies.

@@ -13,6 +13,8 @@ export default function GameStateProvider({ children }) {
   const [gameState, setGameState] = useState({});
   const [role, setRole] = useState(null);
   const [policyPrompt, setPolicyPrompt] = useState(null);
+  const [powerPrompt, setPowerPrompt] = useState(null);
+  const [powerResult, setPowerResult] = useState(null);
   const [playerId, setPlayerId] = useState(null);
 
   useEffect(() => {
@@ -64,6 +66,15 @@ export default function GameStateProvider({ children }) {
       }));
     });
 
+    sock.on(MESSAGE_TYPES.POWER_PROMPT, (data) => {
+      setPowerPrompt(data);
+    });
+
+    sock.on(MESSAGE_TYPES.POWER_RESULT, (res) => {
+      setPowerPrompt(null);
+      setPowerResult(res);
+    });
+
     sock.on(MESSAGE_TYPES.GAME_OVER, (result) => {
       setGameState((prev) => ({
         ...prev,
@@ -78,7 +89,7 @@ export default function GameStateProvider({ children }) {
   }, []);
 
   return (
-    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt, playerId }}>
+    <GameStateContext.Provider value={{ socket, gameState, role, policyPrompt, powerPrompt, powerResult, playerId }}>
       {children}
     </GameStateContext.Provider>
   );
