@@ -173,3 +173,20 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Regularly update `TODO.md` when a step is completed or a new one appears.
 
 
+
+---
+
+## 📝 Rule Enforcement Checklist
+Codex agents and contributors must ensure every gameplay feature aligns with **RULES.md**. Use the following checklist during development and code review:
+
+1. **Player Actions** – Validate that each action (nomination, vote, policy selection, power use) is legal for the current phase and obeys all eligibility rules.
+2. **Win Conditions** – Confirm that win states are triggered exactly as described: five Liberal policies, six Fascist policies, Hitler killed, or Hitler elected Chancellor after three Fascist policies.
+3. **Presidential Powers** – Trigger powers immediately when the associated Fascist policy is enacted and enforce all limitations (single use, investigate only Party Membership, etc.).
+4. **Secrecy** – Never reveal hidden roles or policy cards except where rules explicitly require it. Maintain secrecy for discards and investigations.
+5. **Election Tracker** – Increment on every failed election and automatically enact the top policy when it reaches three, then reset tracker and term limits.
+6. **Policy Deck Management** – Reshuffle the discard pile into the draw deck whenever fewer than three cards remain.
+7. **Veto Power** – Allow veto requests only after five Fascist policies and handle tracker advancement if a veto occurs.
+8. **Eligibility and Term Limits** – Enforce that the last elected President and Chancellor cannot be nominated as Chancellor (except when only five players remain, where only the last Chancellor is barred).
+9. **Logging & Validation** – Log all state changes and cross-check against RULES.md when implementing new features.
+
+Before merging any change, verify the checklist above and update tests to cover new logic.
