@@ -194,6 +194,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Basic logging added on server for game start, nominations, votes, policies, vetoes, and powers.
 - Executed player restrictions enforced. Dead players cannot vote or hold office and presidency skips them. UI still needs cues.
 - Lobby now displays joined players and room code. Only the host may start the game once five or more players have joined. Clients stay in the lobby until the `GAME_START` message arrives.
+- Players may leave a room before the game starts via `LEAVE_ROOM`. Disconnects during an active game are not yet handled beyond removal from the room.
 
 
 

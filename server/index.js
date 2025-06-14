@@ -42,6 +42,17 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on(MESSAGE_TYPES.LEAVE_ROOM, ({ roomCode }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) return;
+    socket.leave(roomCode);
+    roomManager.removePlayer(roomCode, socket.id);
+    const updated = roomManager.getRoomByCode(roomCode);
+    if (updated) {
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, updated);
+    }
+  });
+
   socket.on(MESSAGE_TYPES.START_GAME, ({ roomCode }) => {
     const room = roomManager.getRoomByCode(roomCode);
     if (!room) {

@@ -20,15 +20,18 @@
 - Implemented Execution power with victory checks.
 - Added veto power after five fascist policies with request/decision flow.
 
-## Completed in this wave
+## Completed in previous wave
 - Implemented initial fascist/Hitler knowledge sharing on game start.
 - Added simple server logging for key state changes.
 - Enforced executed player restrictions: dead players cannot vote or hold office and presidency skips them. UI hides vote panel when executed.
 - Improved lobby UI to list players, show room code and allow host to start the game. Errors now display in Lobby.
+
+## Completed in this wave
+- Added ability for players to leave a room before the game starts. Client UI now includes "Leave Room" buttons and server handles `LEAVE_ROOM` events.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers).
 - Write unit tests for game engine, utilities, and room management.
 - Add visual indicators for executed players in all UI components and test presidency rotation logic.
 - Implement a routing/state machine to manage Lobby vs Game views.
-- Add ability for players to leave a room and handle disconnect cleanup.
+- Handle players leaving or disconnecting during an active game.
