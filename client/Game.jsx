@@ -89,17 +89,24 @@ export default function Game() {
           <h3>Use Power: {powerPrompt.power}</h3>
           {powerPrompt.players.map((p) => (
             <button key={p.id} onClick={() => usePower(p.id)}>
-              Investigate {p.name}
+              {powerPrompt.power === 'INVESTIGATE'
+                ? `Investigate ${p.name}`
+                : `Select ${p.name}`}
             </button>
           ))}
         </div>
       )}
 
-      {powerResult && (
+      {powerResult && powerResult.power === 'INVESTIGATE' && (
         <div>
           <p>
             Investigation Result: {powerResult.membership} for player {powerResult.targetId}
           </p>
+        </div>
+      )}
+      {powerResult && powerResult.power === 'SPECIAL_ELECTION' && (
+        <div>
+          <p>Special Election: {powerResult.targetId} will be the next President.</p>
         </div>
       )}
 

@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
         io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
           power: room.game.pendingPower,
           players: room.game.players
-            .filter((p) => p.alive && p.id !== room.game.powerPresidentId)
+            .filter((p) => p.alive)
             .map((p) => ({ id: p.id, name: p.name })),
         });
       }
@@ -122,7 +122,7 @@ io.on('connection', (socket) => {
           io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
             power: room.game.pendingPower,
             players: room.game.players
-              .filter((p) => p.alive && p.id !== room.game.powerPresidentId)
+              .filter((p) => p.alive)
               .map((p) => ({ id: p.id, name: p.name })),
           });
         }
