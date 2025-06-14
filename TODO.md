@@ -35,6 +35,8 @@
 - Added vote result display showing each player's Ja!/Nein choice.
 - Implemented board UI showing enacted policies and election tracker progress.
 - Added PlayerList component showing seating order with President and Chancellor markers.
+- Fixed auto policy logic so election tracker enactments never grant
+  presidential powers.
 
 ### New in this wave
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
@@ -45,8 +47,6 @@
   and Hitler election victory condition.
 
 ## Next Steps
-- Correct auto policy logic so election tracker enactments never grant
-  presidential powers.
 - Ensure every game state change emits a room update to keep clients
   in sync.
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.

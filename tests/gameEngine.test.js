@@ -72,6 +72,24 @@ describe('handleVote', () => {
     expect(state.enactedPolicies.fascist + state.enactedPolicies.liberal).toBe(1);
   });
 
+  test('auto policy from election tracker grants no power', () => {
+    const room = createRoom(7);
+    startGame(room);
+    const state = room.game;
+    state.presidentIndex = 0;
+    state.policyDeck = ['FASCIST'];
+    for (let i = 0; i < 3; i++) {
+      const president = state.players[state.presidentIndex];
+      const nominee = state.players[(state.presidentIndex + 1) % state.players.length];
+      nominateChancellor(room, president.id, nominee.id);
+      state.players
+        .filter((p) => p.alive)
+        .forEach((p) => handleVote(room, p.id, false));
+    }
+    expect(state.pendingPower).toBe(null);
+    expect(state.phase).toBe(PHASES.NOMINATE);
+  });
+
   test('electing Hitler after three fascist policies ends game', () => {
     const room = createRoom(5);
     startGame(room);
