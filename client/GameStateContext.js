@@ -19,6 +19,16 @@ export default function GameStateProvider({ children }) {
   const [powerResult, setPowerResult] = useState(null);
   const [playerId, setPlayerId] = useState(null);
 
+  const resetState = () => {
+    setGameState({});
+    setRole(null);
+    setRoleInfo(null);
+    setPolicyPrompt(null);
+    setVetoPrompt(false);
+    setPowerPrompt(null);
+    setPowerResult(null);
+  };
+
   useEffect(() => {
     const sock = io();
     setSocket(sock);
@@ -100,6 +110,13 @@ export default function GameStateProvider({ children }) {
     };
   }, []);
 
+  const leaveRoom = (roomCode) => {
+    if (socket) {
+      socket.emit(MESSAGE_TYPES.LEAVE_ROOM, { roomCode });
+    }
+    resetState();
+  };
+
   return (
     <GameStateContext.Provider
       value={{
@@ -112,6 +129,7 @@ export default function GameStateProvider({ children }) {
         powerResult,
         playerId,
         vetoPrompt,
+        leaveRoom,
       }}
     >
       {children}

@@ -8,7 +8,7 @@ import { PHASES } from '../shared/constants.js';
  * TODO: Add nomination, voting, policy selection, and powers UI.
  */
 export default function Game() {
-  const { socket, gameState, role, roleInfo, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt } = useContext(GameStateContext);
+  const { socket, gameState, role, roleInfo, policyPrompt, powerPrompt, powerResult, playerId, vetoPrompt, leaveRoom } = useContext(GameStateContext);
 
   const me = gameState?.game?.players?.find((p) => p.id === playerId);
 
@@ -38,6 +38,12 @@ export default function Game() {
     }
   };
 
+  const exitRoom = () => {
+    if (gameState?.code) {
+      leaveRoom(gameState.code);
+    }
+  };
+
   const nominate = (nomineeId) => {
     if (socket && roomCode) {
       socket.emit(MESSAGE_TYPES.NOMINATE_CHANCELLOR, { roomCode, nomineeId });
@@ -53,6 +59,7 @@ export default function Game() {
   return (
     <div>
       <h2>Game In Progress</h2>
+      <button onClick={exitRoom}>Leave Room</button>
       {gameState.gameOver && (
         <div>
           <h3>Game Over</h3>

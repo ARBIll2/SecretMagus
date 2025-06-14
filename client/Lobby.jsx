@@ -7,7 +7,7 @@ import { MESSAGE_TYPES } from '../shared/messages.js';
  * Provides buttons to create or join a room.
  */
 export default function Lobby() {
-  const { socket, gameState, playerId } = useContext(GameStateContext);
+  const { socket, gameState, playerId, leaveRoom } = useContext(GameStateContext);
   const [name, setName] = useState('');
   const [roomCode, setRoomCode] = useState('');
 
@@ -22,6 +22,12 @@ export default function Lobby() {
   const startGame = () => {
     if (socket && gameState?.code) {
       socket.emit(MESSAGE_TYPES.START_GAME, { roomCode: gameState.code });
+    }
+  };
+
+  const exitRoom = () => {
+    if (gameState?.code) {
+      leaveRoom(gameState.code);
     }
   };
 
@@ -61,6 +67,7 @@ export default function Lobby() {
           {isHost && gameState.players.length >= 5 && (
             <button onClick={startGame}>Start Game</button>
           )}
+          <button onClick={exitRoom}>Leave Room</button>
           {gameState.error && <p>{gameState.error}</p>}
         </>
       )}
