@@ -98,9 +98,11 @@ function advancePresidency(state) {
 
 /**
  * Starts a new game for a given room.
+ * Randomly selects the first President as required by the setup rules.
  */
 function startGame(room) {
   room.players = assignRoles(room.players);
+  const firstPresident = Math.floor(Math.random() * room.players.length);
   room.game = {
     players: room.players.map((p) => ({
       id: p.id,
@@ -111,7 +113,7 @@ function startGame(room) {
       vote: null,
     })),
     phase: PHASES.NOMINATE,
-    presidentIndex: 0,
+    presidentIndex: firstPresident,
     chancellorIndex: null,
     failedElections: 0,
     policyDeck: createPolicyDeck(),
