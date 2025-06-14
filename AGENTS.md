@@ -176,7 +176,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 
 ### Rule Implementation Notes
 - Term limits for Chancellor eligibility implemented (Rules: Election & Chancellor Eligibility).
-- Policy draw/discard mechanics and presidential powers remain TODO.
+- Basic policy draw/discard flow implemented. Deck reshuffles the discard pile when fewer than three cards remain (Rules: Legislative Session, Policy Deck Management).
+- Presidential powers and veto power remain TODO.
 
 
 

@@ -70,8 +70,11 @@ export default function Game() {
       {policyPrompt && !gameState.gameOver && (
         <div>
           <h3>Select Policy</h3>
-          <button onClick={() => choosePolicy('LIBERAL')}>Liberal</button>
-          <button onClick={() => choosePolicy('FASCIST')}>Fascist</button>
+          {policyPrompt.map((p, idx) => (
+            <button key={idx} onClick={() => choosePolicy(p)}>
+              {p}
+            </button>
+          ))}
         </div>
       )}
 
