@@ -33,8 +33,9 @@
 - Disconnecting players during an active game are now treated as executed. If Hitler disconnects the Liberals win. Room state updates are emitted.
 - Tracked current nomination on the client and display which players are up for election.
 - Added vote result display showing each player's Ja!/Nein choice.
+- Implemented board UI showing enacted policies and election tracker progress.
 
 ## Next Steps
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
 - Write unit tests for the game engine and helpers to enforce rule compliance and prevent regressions.
-- Add board UI showing enacted policies and election tracker progress.
+- Add player list component to display seating order and indicate current President and Chancellor.
