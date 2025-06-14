@@ -45,6 +45,10 @@
   and Hitler election victory condition.
 
 ## Next Steps
+- Correct auto policy logic so election tracker enactments never grant
+  presidential powers.
+- Ensure every game state change emits a room update to keep clients
+  in sync.
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
 - Add more unit tests covering policy processing and presidential
   powers. Integrate tests with CI.

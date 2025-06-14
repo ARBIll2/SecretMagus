@@ -250,3 +250,26 @@ Automated tests | Partial | Coverage expanded with voting and victory tests; fur
 - Identified blockers to reach playtest:
 - Improve phase-specific UI
 - Expand automated test coverage for rule enforcement
+
+## 📊 June 2025 Progress Evaluation
+
+Feature | Status | Notes
+--- | --- | ---
+Room creation & join flow | ✅ | Server events add/remove players and broadcast updates
+Role assignment | ✅ | `startGame` assigns roles and chooses a random first president
+Game phases (nominate → vote → policy) | ✅ | Flow handled via nomination, voting, and policy choice handlers
+Vote counting | ✅ | Votes tallied from alive players; majority check works
+Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles as needed; selections recorded
+Fascist powers | ✅ | Investigate, Special Election, Policy Peek, and Execution implemented
+Win condition checks | ✅ | Liberal/Fascist policy totals and Hitler conditions evaluated
+Game state broadcast & sync | Partial | Some state changes still missing dedicated events
+UI reactivity | Partial | React components display basic prompts but lack polish
+Socket message handling | ✅ | Client and server support defined message types
+Rules compliance (RULES.md) | Partial | Auto policy from the election tracker incorrectly grants powers
+
+- Current blockers:
+  - Fix auto-policy logic so no power is granted when a random policy is enacted
+  - Create phase-oriented UI components for better reactivity
+  - Expand test coverage for powers and win conditions
+  - Ensure every state change emits updates to prevent desync
+  - Improve overall styling and usability for playtesting
