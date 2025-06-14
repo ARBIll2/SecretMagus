@@ -247,7 +247,7 @@ function handleVote(room, playerId, vote) {
       state.failedElections += 1;
       if (state.failedElections >= 3) {
         const autoPolicy = drawPolicies(state, 1)[0];
-        autoResult = processPolicy(room, autoPolicy);
+        autoResult = processPolicy(room, autoPolicy, false);
         state.failedElections = 0;
         state.lastPresidentId = null;
         state.lastChancellorId = null;
@@ -270,8 +270,11 @@ function handleVote(room, playerId, vote) {
 
 /**
  * Processes a selected policy.
+ * @param {object} room Room containing the game state
+ * @param {string} policy Policy to enact
+ * @param {boolean} grantPower Whether a fascist power should trigger
  */
-function processPolicy(room, policy) {
+function processPolicy(room, policy, grantPower = true) {
   const state = room.game;
   if (!state) return null;
 
@@ -288,7 +291,7 @@ function processPolicy(room, policy) {
   state.chancellorIndex = null;
 
   if (!victory) {
-    if (policy === 'FASCIST') {
+    if (policy === 'FASCIST' && grantPower) {
       const power = getGrantedPower(state);
       if (power && power !== POWERS.NONE) {
         state.pendingPower = power;
@@ -398,7 +401,7 @@ function handleVetoDecision(room, playerId, accept) {
     let autoResult = null;
     if (state.failedElections >= 3) {
       const autoPolicy = drawPolicies(state, 1)[0];
-      autoResult = processPolicy(room, autoPolicy);
+      autoResult = processPolicy(room, autoPolicy, false);
       state.failedElections = 0;
       state.lastPresidentId = null;
       state.lastChancellorId = null;

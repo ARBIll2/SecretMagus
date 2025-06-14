@@ -265,10 +265,9 @@ Win condition checks | ✅ | Liberal/Fascist policy totals and Hitler conditions
 Game state broadcast & sync | Partial | Some state changes still missing dedicated events
 UI reactivity | Partial | React components display basic prompts but lack polish
 Socket message handling | ✅ | Client and server support defined message types
-Rules compliance (RULES.md) | Partial | Auto policy from the election tracker incorrectly grants powers
+Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ignores powers
 
 - Current blockers:
-  - Fix auto-policy logic so no power is granted when a random policy is enacted
   - Create phase-oriented UI components for better reactivity
   - Expand test coverage for powers and win conditions
   - Ensure every state change emits updates to prevent desync
