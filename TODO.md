@@ -44,6 +44,10 @@
   was part of the government the election now fails and advances the tracker.
 - Added unit tests covering disconnect outcomes and Hitler disconnect victory.
 
+### Additional in this wave
+- Added unit tests for policy processing including Policy Peek power and veto
+  flow.
+
 ### Previous wave
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
   `shuffleDeck` and Chancellor nomination eligibility.
@@ -56,6 +60,5 @@
 - Ensure every game state change emits a room update to keep clients
   in sync.
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
-- Add more unit tests covering policy processing and presidential
-  powers. Integrate tests with CI.
+- Expand unit tests for remaining presidential powers and edge cases. Integrate tests with CI.
 - Improve UI styling for board and player list.

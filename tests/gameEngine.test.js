@@ -2,6 +2,9 @@ const {
   nominateChancellor,
   startGame,
   handleVote,
+  beginPolicyPhase,
+  handlePolicyChoice,
+  handleVetoDecision,
   handleDisconnect,
 } = require('../server/gameEngine.js');
 const { ROLE_DISTRIBUTION, PHASES, ROLES } = require('../shared/constants.js');
@@ -130,9 +133,64 @@ describe('handleDisconnect', () => {
     startGame(room);
     const state = room.game;
     state.presidentIndex = 0;
+    state.players[0].role = ROLES.LIBERAL;
     const result = handleDisconnect(room, state.players[0].id);
     expect(state.failedElections).toBe(1);
     expect(state.phase).toBe(PHASES.NOMINATE);
     expect(result).toBeNull();
+  });
+});
+
+describe('policy phase and powers', () => {
+  test('fascist policy after two fascists grants Policy Peek', () => {
+    const room = createRoom(5);
+    startGame(room);
+    const state = room.game;
+    state.presidentIndex = 0;
+    state.chancellorIndex = 1;
+    state.phase = PHASES.POLICY;
+    state.enactedPolicies.fascist = 2;
+    state.policyDeck = ['FASCIST', 'LIBERAL', 'LIBERAL'];
+
+    const presidentId = state.players[state.presidentIndex].id;
+    const chancellorId = state.players[state.chancellorIndex].id;
+
+    beginPolicyPhase(room);
+    const first = state.policyHand[0];
+    const out1 = handlePolicyChoice(room, presidentId, { policy: first });
+    expect(out1.promptPlayerId).toBe(chancellorId);
+    expect(out1.policies).toHaveLength(2);
+
+    const fascistPolicy = state.policyHand.find((p) => p === 'FASCIST');
+    const out2 = handlePolicyChoice(room, chancellorId, { policy: fascistPolicy });
+    expect(out2.enacted).toBe(true);
+    expect(state.pendingPower).toBe('POLICY_PEEK');
+    expect(state.phase).toBe(PHASES.POWER);
+  });
+
+  test('veto request after five fascist policies advances tracker', () => {
+    const room = createRoom(5);
+    startGame(room);
+    const state = room.game;
+    state.presidentIndex = 0;
+    state.chancellorIndex = 1;
+    state.phase = PHASES.POLICY;
+    state.enactedPolicies.fascist = 5;
+    state.policyDeck = ['FASCIST', 'LIBERAL', 'FASCIST'];
+
+    const presidentId = state.players[state.presidentIndex].id;
+    const chancellorId = state.players[state.chancellorIndex].id;
+
+    beginPolicyPhase(room);
+    handlePolicyChoice(room, presidentId, { policy: state.policyHand[0] });
+    const out = handlePolicyChoice(room, chancellorId, { veto: true });
+    expect(out.veto).toBe(true);
+    expect(out.promptPlayerId).toBe(presidentId);
+
+    const result = handleVetoDecision(room, presidentId, true);
+    expect(result.accepted).toBe(true);
+    expect(state.failedElections).toBe(1);
+    expect(state.policyHand).toBeNull();
+    expect(state.phase).toBe(PHASES.NOMINATE);
   });
 });
