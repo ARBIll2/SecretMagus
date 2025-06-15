@@ -15,6 +15,9 @@ function createBot(role, name) {
     trustDecayRate: clamp(0, 1, 0.2 + (Math.random() - 0.5) * 0.2),
   };
 
+  const tones = ['cautious', 'aggressive', 'neutral'];
+  const tone = tones[Math.floor(Math.random() * tones.length)];
+
   const memory = {
     votingHistory: [],
     enactedPolicies: { liberal: 0, fascist: 0 },
@@ -104,8 +107,22 @@ function createBot(role, name) {
     return target.id;
   }
 
-  function say() {
-    return null;
+  function say(context = {}) {
+    const lines = [];
+    if (context.event === 'nomination' && context.nomineeName) {
+      if (tone === 'cautious') lines.push('Hmm… interesting nomination.');
+      if (tone === 'aggressive') lines.push(`Don't trust ${context.nomineeName} at all.`);
+      lines.push(`Good luck, ${context.nomineeName}.`);
+    }
+    if (context.event === 'voteResult') {
+      if (context.passed) lines.push('That was a bold play.');
+      else lines.push('Looks like that government failed.');
+    }
+    if (context.event === 'policy') {
+      lines.push('Let\'s keep moving.');
+    }
+    if (lines.length === 0) return null;
+    return lines[Math.floor(Math.random() * lines.length)];
   }
 
   return {
@@ -113,6 +130,7 @@ function createBot(role, name) {
     name,
     behavior,
     memory,
+    tone,
     voteOnGovernment,
     nominateChancellor,
     choosePolicy,
