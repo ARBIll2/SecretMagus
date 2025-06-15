@@ -27,6 +27,18 @@ const POWERS = Object.freeze({
   EXECUTION: 'EXECUTION',
 });
 
+// Available portrait IDs
+const AVAILABLE_PORTRAITS = [
+  'owl',
+  'fox',
+  'robot',
+  'pirate',
+  'alien',
+  'witch',
+  'cat',
+  'deer',
+];
+
 // Mapping of fascist policy count to powers based on player count
 // Index 0 corresponds to the first enacted fascist policy, etc.
 const FASCIST_POWERS = {
@@ -90,4 +102,5 @@ module.exports = {
   POWERS,
   FASCIST_POWERS,
   ROLE_DISTRIBUTION,
+  AVAILABLE_PORTRAITS,
 };

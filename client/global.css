@@ -2,3 +2,14 @@
 body {
   font-family: sans-serif;
 }
+
+.portrait-fallback {
+  width: 80px;
+  height: 80px;
+  background: black;
+  color: white;
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

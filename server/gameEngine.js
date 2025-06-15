@@ -103,16 +103,20 @@ function advancePresidency(state) {
 function startGame(room) {
   room.players = assignRoles(room.players);
   const firstPresident = Math.floor(Math.random() * room.players.length);
+  const players = room.players.map((p) => ({
+    id: p.id,
+    name: p.name,
+    role: p.role,
+    socketId: p.socketId,
+    portrait: p.portrait,
+    alive: true,
+    hasVoted: false,
+    vote: null,
+    isRevealedTo: [p.id],
+  }));
+
   room.game = {
-    players: room.players.map((p) => ({
-      id: p.id,
-      name: p.name,
-      role: p.role,
-      socketId: p.socketId,
-      alive: true,
-      hasVoted: false,
-      vote: null,
-    })),
+    players,
     phase: PHASES.NOMINATE,
     presidentIndex: firstPresident,
     chancellorIndex: null,
@@ -132,6 +136,24 @@ function startGame(room) {
     investigatedIds: [],
     specialElectionReturnIndex: null,
   };
+
+  // initial role visibility
+  const fascists = players.filter((p) => p.role === ROLES.FASCIST);
+  const hitler = players.find((p) => p.role === ROLES.HITLER);
+  fascists.forEach((f) => {
+    fascists.forEach((other) => {
+      if (other.id !== f.id && !other.isRevealedTo.includes(f.id)) {
+        other.isRevealedTo.push(f.id);
+      }
+    });
+    if (hitler && !hitler.isRevealedTo.includes(f.id)) hitler.isRevealedTo.push(f.id);
+    if (!f.isRevealedTo.includes(hitler.id)) f.isRevealedTo.push(hitler.id);
+  });
+  if (players.length <= 6 && hitler) {
+    fascists.forEach((f) => {
+      if (!hitler.isRevealedTo.includes(f.id)) hitler.isRevealedTo.push(f.id);
+    });
+  }
 }
 
 /**
