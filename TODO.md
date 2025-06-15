@@ -38,6 +38,9 @@
 - Fixed auto policy logic so election tracker enactments never grant
   presidential powers.
 
+- Ensured every game state change now emits a `ROOM_UPDATE` so clients
+  remain in sync.
+
 ### New in this wave
 - Refactored disconnect handling into the game engine so disconnecting players
   are treated as executions without leaking roles. If the disconnecting player
@@ -59,8 +62,6 @@
   and Hitler election victory condition.
 
 ## Next Steps
-- Ensure every game state change emits a room update to keep clients
-  in sync.
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
 - Expand unit tests for remaining presidential powers and edge cases. Integrate tests with CI.
 - Improve UI styling for board and player list.

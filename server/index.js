@@ -22,6 +22,18 @@ function logEvent(roomCode, event, details = '') {
   console.log(`[${roomCode}] ${event}`, details);
 }
 
+/**
+ * Emits a ROOM_UPDATE event for the given room code.
+ * @param {string} roomCode
+ * @param {object} [room] Optional pre-fetched room object
+ */
+function emitRoomUpdate(roomCode, room) {
+  const data = room || roomManager.getRoomByCode(roomCode);
+  if (data) {
+    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, data);
+  }
+}
+
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
@@ -29,14 +41,14 @@ io.on('connection', (socket) => {
     const player = { id: socket.id, name };
     const code = roomManager.createRoom(player);
     socket.join(code);
-    io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, roomManager.getRoomByCode(code));
+    emitRoomUpdate(code);
   });
 
   socket.on(MESSAGE_TYPES.JOIN_ROOM, ({ name, roomCode }) => {
     const player = { id: socket.id, name };
     if (roomManager.joinRoom(roomCode, player)) {
       socket.join(roomCode);
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, roomManager.getRoomByCode(roomCode));
+      emitRoomUpdate(roomCode);
     } else {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
     }
@@ -63,13 +75,13 @@ io.on('connection', (socket) => {
         }
       }
 
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+        emitRoomUpdate(roomCode, room);
     } else {
       roomManager.removePlayer(roomCode, socket.id);
       const updated = roomManager.getRoomByCode(roomCode);
-      if (updated) {
-        io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, updated);
-      }
+        if (updated) {
+          emitRoomUpdate(roomCode, updated);
+        }
     }
   });
 
@@ -86,7 +98,7 @@ io.on('connection', (socket) => {
     room.players.forEach((p) => {
       io.to(p.id).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, knowledge[p.id]);
     });
-    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+    emitRoomUpdate(roomCode, room);
   });
 
   socket.on(MESSAGE_TYPES.NOMINATE_CHANCELLOR, ({ roomCode, nomineeId }) => {
@@ -102,7 +114,7 @@ io.on('connection', (socket) => {
         presidentId: socket.id,
         nomineeId,
       });
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+      emitRoomUpdate(roomCode, room);
     }
   });
 
@@ -154,7 +166,7 @@ io.on('connection', (socket) => {
         }
       }
     }
-    io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+    emitRoomUpdate(roomCode, room);
   });
 
   socket.on(MESSAGE_TYPES.POLICY_CHOICE, ({ roomCode, policy, veto }) => {
@@ -190,7 +202,7 @@ io.on('connection', (socket) => {
           });
         }
       }
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+        emitRoomUpdate(roomCode, room);
     }
   });
 
@@ -225,7 +237,7 @@ io.on('connection', (socket) => {
           });
         }
       }
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+      emitRoomUpdate(roomCode, room);
     }
   });
 
@@ -246,7 +258,7 @@ io.on('connection', (socket) => {
       if (result.gameOver) {
         io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
       }
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+        emitRoomUpdate(roomCode, room);
     }
   });
 
@@ -273,13 +285,13 @@ io.on('connection', (socket) => {
             io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.gameOver);
           }
         }
-        io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+          emitRoomUpdate(code, room);
       } else {
         roomManager.removePlayer(code, socket.id);
         const updated = roomManager.getRoomByCode(code);
-        if (updated) {
-          io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, updated);
-        }
+          if (updated) {
+            emitRoomUpdate(code, updated);
+          }
       }
     });
   });
