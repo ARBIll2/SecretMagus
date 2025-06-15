@@ -17,11 +17,13 @@
 - Polish layout for main game UI components
 - Developer debug toggle for viewing game state
 
+## ✅ Completed (continued)
+- Basic phase state machine added for switching between Lobby and Game views
+
 ## 🔨 In Progress
 - Additional UX cues for executed players and game over screens
 
 ## 🕳️ Missing / Skipped Logic
-- Add proper routing or state machine to manage phases
 - Build step for bundling client scripts and global styles
 
 
