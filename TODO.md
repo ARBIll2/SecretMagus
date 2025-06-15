@@ -11,9 +11,9 @@
 - Action log and basic AI tips
 - Jest test suite covering utilities, core game logic, and tips engine
 - Room updates broadcast after every state change
+- Expand test coverage for remaining edge cases and powers
 
 ## 🔨 In Progress
-- Expand test coverage for remaining edge cases and powers
 - Improve styling for the board and player list
 
 ## 🧠 Needs Design Decision
