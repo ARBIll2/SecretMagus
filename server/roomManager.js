@@ -1,6 +1,6 @@
 /**
  * Simple in-memory room manager.
- * TODO: replace with persistent storage if needed.
+ * NOTE: replace with persistent storage if scaling to multiple servers.
  */
 const { generateRoomCode } = require('../shared/utils.js');
 

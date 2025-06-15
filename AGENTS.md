@@ -183,6 +183,10 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Keep the game logic strictly on the server; clients only send user actions.
 - Add unit tests for utilities and the game engine as they are implemented.
 - Regularly update `TODO.md` when a step is completed or a new one appears.
+- Run `npm test` before committing to ensure all tests pass.
+- After mutating game state on the server, call `emitRoomUpdate` so all clients stay in sync.
+- Never expose secret roles or policy choices to the client except through dedicated prompts.
+- Review win conditions and phase transitions for every new feature, including disconnect and term limit edge cases.
 
 ### Rule Implementation Notes
 - Term limits for Chancellor eligibility implemented (Rules: Election & Chancellor Eligibility).
@@ -241,16 +245,13 @@ Vote counting | ✅ | Votes tallied from alive players; majority check works
 Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles as needed; selections recorded
 Fascist powers | ✅ | Investigate, Special Election, Policy Peek, and Execution implemented
 Win condition checks | ✅ | Liberal/Fascist policy totals and Hitler conditions evaluated
-Game state broadcast & sync | Partial | Some state changes still missing dedicated events
+Game state broadcast & sync | ✅ | All state changes now emit `ROOM_UPDATE` events
 UI reactivity | Partial | React components display basic prompts but lack polish
 Socket message handling | ✅ | Client and server support defined message types
 Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ignores powers
 
 - Current blockers:
   - Expand test coverage for powers and win conditions
-  - Ensure every state change emits updates to prevent desync. Use the
-    helper `emitRoomUpdate(roomCode, room?)` from `server/index.js` after
-    mutating game state.
   - Improve overall styling and usability for playtesting
 
 ## 📊 July 2025 Progress Evaluation
@@ -260,3 +261,4 @@ Feature | Status | Notes
 Automated tests | ✅ | Added coverage for policy processing, Policy Peek power, and veto flow
 AI tips & action log | ✅ | Client displays suggestions and history using only public data
 Phase-oriented UI components | ✅ | NominationPanel, VotePanel, PolicyHand, VetoPrompt and PowerPanel improve reactivity
+Room update broadcasting | ✅ | Every state mutation now triggers a `ROOM_UPDATE`
