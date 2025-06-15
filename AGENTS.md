@@ -247,7 +247,6 @@ Socket message handling | ✅ | Client and server support defined message types
 Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ignores powers
 
 - Current blockers:
-  - Create phase-oriented UI components for better reactivity
   - Expand test coverage for powers and win conditions
   - Ensure every state change emits updates to prevent desync. Use the
     helper `emitRoomUpdate(roomCode, room?)` from `server/index.js` after
@@ -260,3 +259,4 @@ Feature | Status | Notes
 --- | --- | ---
 Automated tests | ✅ | Added coverage for policy processing, Policy Peek power, and veto flow
 AI tips & action log | ✅ | Client displays suggestions and history using only public data
+Phase-oriented UI components | ✅ | NominationPanel, VotePanel, PolicyHand, VetoPrompt and PowerPanel improve reactivity
