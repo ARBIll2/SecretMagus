@@ -262,7 +262,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // TODO: add more game event handlers
+  // NOTE: add new game event handlers as features expand
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     roomManager.listRooms().forEach((code) => {

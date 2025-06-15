@@ -580,5 +580,5 @@ module.exports = {
   handlePower,
   getInitialKnowledge,
   handleDisconnect,
-  // TODO: add more handlers for each phase and power
+  // NOTE: additional handlers can be introduced if new phases or powers are added
 };
