@@ -513,6 +513,62 @@ function handlePower(room, playerId, action) {
   return null;
 }
 
+/**
+ * Handles a player disconnecting mid-game. The player is treated as executed
+ * without revealing their role. If Hitler disconnects the Liberals win. If the
+ * player was part of the current government, the election fails and the
+ * election tracker advances.
+ * @param {object} room Room containing the game state
+ * @param {string} playerId Socket id of the disconnecting player
+ * @returns {object|null} result of automatic actions (gameOver or autoResult)
+ */
+function handleDisconnect(room, playerId) {
+  const state = room.game;
+  if (!state || state.phase === PHASES.GAME_OVER) return null;
+
+  const idx = state.players.findIndex((p) => p.id === playerId);
+  if (idx === -1) return null;
+  const player = state.players[idx];
+  if (!player.alive) return null;
+
+  player.alive = false;
+  state.history.push({ type: 'DISCONNECT', player: playerId });
+
+  if (player.role === ROLES.HITLER) {
+    state.phase = PHASES.GAME_OVER;
+    return { gameOver: { winner: 'LIBERALS', reason: 'HITLER_EXECUTED' } };
+  }
+
+  const involved =
+    idx === state.presidentIndex ||
+    idx === state.chancellorIndex ||
+    state.powerPresidentId === playerId;
+  if (involved) {
+    state.pendingPower = null;
+    state.powerPresidentId = null;
+    state.policyHand = null;
+    state.policyStep = null;
+    state.chancellorIndex = null;
+    state.failedElections += 1;
+    let autoResult = null;
+    if (state.failedElections >= 3) {
+      const autoPolicy = drawPolicies(state, 1)[0];
+      autoResult = processPolicy(room, autoPolicy, false);
+      state.failedElections = 0;
+      state.lastPresidentId = null;
+      state.lastChancellorId = null;
+    } else {
+      advancePresidency(state);
+      state.phase = PHASES.NOMINATE;
+    }
+    if (autoResult) {
+      return { autoResult };
+    }
+  }
+
+  return null;
+}
+
 module.exports = {
   startGame,
   handleVote,
@@ -523,5 +579,6 @@ module.exports = {
   handleVetoDecision,
   handlePower,
   getInitialKnowledge,
+  handleDisconnect,
   // TODO: add more handlers for each phase and power
 };

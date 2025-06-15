@@ -2,6 +2,7 @@ const {
   nominateChancellor,
   startGame,
   handleVote,
+  handleDisconnect,
 } = require('../server/gameEngine.js');
 const { ROLE_DISTRIBUTION, PHASES, ROLES } = require('../shared/constants.js');
 
@@ -107,5 +108,31 @@ describe('handleVote', () => {
       winner: 'FASCISTS',
       reason: 'HITLER_ELECTED',
     });
+  });
+});
+
+describe('handleDisconnect', () => {
+  test('disconnecting Hitler ends the game for liberals', () => {
+    const room = createRoom(5);
+    startGame(room);
+    const state = room.game;
+    state.players[2].role = ROLES.HITLER;
+    const result = handleDisconnect(room, state.players[2].id);
+    expect(state.players[2].alive).toBe(false);
+    expect(result.gameOver).toEqual({
+      winner: 'LIBERALS',
+      reason: 'HITLER_EXECUTED',
+    });
+  });
+
+  test('disconnecting current President counts as failed election', () => {
+    const room = createRoom(5);
+    startGame(room);
+    const state = room.game;
+    state.presidentIndex = 0;
+    const result = handleDisconnect(room, state.players[0].id);
+    expect(state.failedElections).toBe(1);
+    expect(state.phase).toBe(PHASES.NOMINATE);
+    expect(result).toBeNull();
   });
 });

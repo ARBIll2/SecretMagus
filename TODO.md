@@ -39,6 +39,12 @@
   presidential powers.
 
 ### New in this wave
+- Refactored disconnect handling into the game engine so disconnecting players
+  are treated as executions without leaking roles. If the disconnecting player
+  was part of the government the election now fails and advances the tracker.
+- Added unit tests covering disconnect outcomes and Hitler disconnect victory.
+
+### Previous wave
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
   `shuffleDeck` and Chancellor nomination eligibility.
 - First Presidential Candidate is now selected randomly when the game starts.
