@@ -271,5 +271,11 @@ Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ig
 - Current blockers:
   - Create phase-oriented UI components for better reactivity
   - Expand test coverage for powers and win conditions
-  - Ensure every state change emits updates to prevent desync
+- Ensure every state change emits updates to prevent desync
   - Improve overall styling and usability for playtesting
+
+## 📊 July 2025 Progress Evaluation
+
+Feature | Status | Notes
+--- | --- | ---
+Automated tests | ✅ | Added coverage for policy processing, Policy Peek power, and veto flow
