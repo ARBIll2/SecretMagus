@@ -15,13 +15,47 @@ export default function Board() {
     game.chancellorIndex != null ? game.players?.[game.chancellorIndex] : null;
 
   return (
-    <div>
-      <h3>Board</h3>
-      <p>Liberal Policies: {liberal} / 5</p>
-      <p>Fascist Policies: {fascist} / 6</p>
-      <p>Election Tracker: {tracker} / 3</p>
-      {president && <p>President: {president.name}</p>}
-      {chancellor && <p>Chancellor: {chancellor.name}</p>}
+    <div className="board bg-gray-100 p-4 rounded shadow max-w-md mx-auto mb-4">
+      <h3 className="text-xl font-bold mb-2">Board</h3>
+
+      <div className="mb-3">
+        <p className="font-semibold">Liberal Policies</p>
+        <div className="flex space-x-1 mt-1">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-6 h-6 border ${i < liberal ? 'bg-blue-500' : 'bg-gray-200'}`}
+            ></div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <p className="font-semibold">Fascist Policies</p>
+        <div className="flex space-x-1 mt-1">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-6 h-6 border ${i < fascist ? 'bg-red-500' : 'bg-gray-200'}`}
+            ></div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <p className="font-semibold">Election Tracker</p>
+        <div className="flex space-x-1 mt-1">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-6 h-6 border ${i < tracker ? 'bg-yellow-500' : 'bg-gray-200'}`}
+            ></div>
+          ))}
+        </div>
+      </div>
+
+      {president && <p className="italic">President: {president.name}</p>}
+      {chancellor && <p className="italic">Chancellor: {chancellor.name}</p>}
     </div>
   );
 }
