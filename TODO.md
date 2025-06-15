@@ -14,6 +14,7 @@
 - Confirmation prompt when a player attempts to leave mid-game
 - Expand test coverage for remaining edge cases and powers
 - Improved styling for the board and player list
+- Confirmation prompt when leaving a game in progress
 - Additional UX cues for executed players and game over screens
 
 ## 🔨 In Progress
