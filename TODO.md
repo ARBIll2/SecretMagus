@@ -16,12 +16,14 @@
 - Reconnection support for players who refresh or temporarily lose connection
 - Polish layout for main game UI components
 
+## ✅ Completed (continued)
+- Basic phase state machine added for switching between Lobby and Game views
+
 ## 🔨 In Progress
 - Additional UX cues for executed players and game over screens
 
 ## 🕳️ Missing / Skipped Logic
 - Replace debug JSON dump in Game.jsx with a dedicated developer toggle
-- Add proper routing or state machine to manage phases
 - Build step for bundling client scripts and global styles
 
 
