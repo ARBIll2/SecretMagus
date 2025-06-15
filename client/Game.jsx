@@ -9,6 +9,8 @@ import VotePanel from './VotePanel.jsx';
 import PolicyHand from './PolicyHand.jsx';
 import VetoPrompt from './VetoPrompt.jsx';
 import PowerPanel from './PowerPanel.jsx';
+import ExecutedOverlay from './ExecutedOverlay.jsx';
+import GameOverScreen from './GameOverScreen.jsx';
 
 /**
  * Main game UI. Renders based on current game state from context.
@@ -44,13 +46,6 @@ export default function Game() {
       <button onClick={exitRoom}>Leave Room</button>
       <Board />
       <PlayerList />
-      {gameState.gameOver && (
-        <div>
-          <h3>Game Over</h3>
-          <p>Winner: {gameState.gameOver.winner}</p>
-          <p>Reason: {gameState.gameOver.reason}</p>
-        </div>
-      )}
       {role && <p>Your role: {role}</p>}
       {roleInfo && roleInfo.fascists && roleInfo.fascists.length > 0 && (
         <div>
@@ -66,7 +61,7 @@ export default function Game() {
         <p>Hitler is {roleInfo.hitler.name}</p>
       )}
 
-      {me && !me.alive && <p>You have been executed and may not act.</p>}
+      {me && !me.alive && !gameState.gameOver && <ExecutedOverlay />}
 
       {nomination && (
         <p>
@@ -109,9 +104,6 @@ export default function Game() {
       {powerResult && powerResult.power === 'EXECUTION' && (
         <div>
           <p>{powerResult.targetName} has been executed.</p>
-          {powerResult.gameOver && (
-            <p>Game Over - {powerResult.gameOver.winner} win: {powerResult.gameOver.reason}</p>
-          )}
         </div>
       )}
 
@@ -133,6 +125,8 @@ export default function Game() {
 
       <Tips />
       <ActionLog />
+
+      {gameState.gameOver && <GameOverScreen />}
 
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
     </div>

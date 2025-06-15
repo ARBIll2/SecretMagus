@@ -22,6 +22,9 @@ export default function PlayerList() {
           return (
             <li key={p.id} className={`flex items-center ${deadStyles}`}>
               <span className="flex-1">{p.name}</span>
+              {!p.alive && (
+                <span className="ml-2 text-gray-600" title="Executed">☠️</span>
+              )}
               {isPresident && (
                 <span className="ml-2 text-blue-600" title="President">
                   👑
