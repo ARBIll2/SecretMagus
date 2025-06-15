@@ -203,6 +203,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Players may leave a room before the game starts via `LEAVE_ROOM`. During a game, a disconnect starts a 30s timer. If the player does not reconnect in time they are executed. Hitler disconnecting and failing to return still ends the game for the Liberals.
 - Leaving via `LEAVE_ROOM` after the game has begun immediately executes that player.
 - Disconnect timers are cleared when a player reconnects using their persistent `playerId`.
+- The client now prompts for confirmation before sending `LEAVE_ROOM` during an active game.
+- Disconnects are handled inside the game engine. If a disconnecting player was part of the active government, the election fails and the tracker advances. No role information is revealed unless Hitler was executed.
 - Auto policy results from the Election Tracker are now broadcast to all players to maintain sync.
 - Client tracks current nomination and displays vote results to improve transparency.
 - Basic board UI added showing policy tracks and election tracker progress.
