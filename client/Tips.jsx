@@ -13,9 +13,9 @@ export default function Tips() {
   if (!tips.length) return null;
 
   return (
-    <div>
-      <h3>Tips</h3>
-      <ul>
+    <div className="bg-white p-4 rounded shadow mb-4 text-sm">
+      <h3 className="text-lg font-bold mb-2">Tips</h3>
+      <ul className="list-disc list-inside space-y-1">
         {tips.map((t, idx) => (
           <li key={idx}>{t}</li>
         ))}

@@ -22,15 +22,26 @@ export default function PolicyHand() {
   };
 
   return (
-    <div>
-      <h3>Select Policy</h3>
-      {policyPrompt.policies.map((p, idx) => (
-        <button key={idx} onClick={() => choosePolicy(p)}>
-          {p}
-        </button>
-      ))}
+    <div className="bg-white p-4 rounded shadow mb-4">
+      <h3 className="text-lg font-bold mb-2">Select Policy</h3>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {policyPrompt.policies.map((p, idx) => (
+          <button
+            key={idx}
+            onClick={() => choosePolicy(p)}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+          >
+            {p}
+          </button>
+        ))}
+      </div>
       {policyPrompt.canVeto && (
-        <button onClick={requestVeto}>Request Veto</button>
+        <button
+          onClick={requestVeto}
+          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+        >
+          Request Veto
+        </button>
       )}
     </div>
   );

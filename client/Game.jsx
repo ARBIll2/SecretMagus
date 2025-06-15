@@ -51,11 +51,22 @@ export default function Game() {
 
 
   return (
-    <div>
-      <h2>Game In Progress</h2>
-      <button onClick={exitRoom}>Leave Room</button>
-      <Board />
-      <PlayerList />
+    <div className="p-4 space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Room {roomCode}</h2>
+        <button
+          onClick={exitRoom}
+          className="bg-gray-800 text-white px-3 py-1 rounded"
+        >
+          Leave Room
+        </button>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <Board />
+        <PlayerList />
+      </div>
+
       {role && <p>Your role: {role}</p>}
       {roleInfo && roleInfo.fascists && roleInfo.fascists.length > 0 && (
         <div>
@@ -88,11 +99,15 @@ export default function Game() {
         </p>
       )}
 
-      {!gameState.gameOver && <NominationPanel />}
-      {!gameState.gameOver && <VotePanel />}
-      {policyPrompt && !gameState.gameOver && <PolicyHand />}
-      {vetoPrompt && !gameState.gameOver && <VetoPrompt />}
-      {powerPrompt && !gameState.gameOver && <PowerPanel />}
+      {!gameState.gameOver && (
+        <div className="space-y-4">
+          <NominationPanel />
+          <VotePanel />
+          {policyPrompt && <PolicyHand />}
+          {vetoPrompt && <VetoPrompt />}
+          {powerPrompt && <PowerPanel />}
+        </div>
+      )}
 
       {powerResult && powerResult.power === 'INVESTIGATE' && (
         <div>
@@ -133,8 +148,10 @@ export default function Game() {
         </div>
       )}
 
-      <Tips />
-      <ActionLog />
+      <div className="grid md:grid-cols-2 gap-4">
+        <Tips />
+        <ActionLog />
+      </div>
 
       {gameState.gameOver && <GameOverScreen />}
 
