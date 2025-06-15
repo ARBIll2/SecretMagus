@@ -12,18 +12,17 @@
 - Jest test suite covering utilities, core game logic, and tips engine
 - Room updates broadcast after every state change
 - Confirmation prompt when a player attempts to leave mid-game
-- Expand test coverage for remaining edge cases and powers
 - Improved styling for the board and player list
 - Reconnection support for players who refresh or temporarily lose connection
-- Confirmation prompt when leaving a game in progress
-- Additional UX cues for executed players and game over screens
 - Polish layout for main game UI components
 
 ## 🔨 In Progress
-
-## 🔜 Next Tasks
 - Additional UX cues for executed players and game over screens
-- Replace debug JSON dump in Game.jsx with dedicated developer toggle
+
+## 🕳️ Missing / Skipped Logic
+- Replace debug JSON dump in Game.jsx with a dedicated developer toggle
+- Add proper routing or state machine to manage phases
+- Build step for bundling client scripts and global styles
 
 
 ## 🧠 Needs Design Decision
