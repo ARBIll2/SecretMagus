@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { GameStateContext } from './GameStateContext.js';
 import { PHASES } from '../shared/constants.js';
 import Board from './Board.jsx';
@@ -31,6 +31,8 @@ export default function Game() {
     leaveRoom,
   } = useContext(GameStateContext);
 
+  const [showDebug, setShowDebug] = useState(false);
+
   const me = gameState?.game?.players?.find((p) => p.id === playerId);
 
   const roomCode = gameState?.code || gameState?.roomCode;
@@ -55,12 +57,20 @@ export default function Game() {
     <div className="p-4 space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Room {roomCode}</h2>
-        <button
-          onClick={exitRoom}
-          className="bg-gray-800 text-white px-3 py-1 rounded"
-        >
-          Leave Room
-        </button>
+        <div>
+          <button
+            onClick={() => setShowDebug((d) => !d)}
+            className="bg-gray-600 text-white px-3 py-1 rounded mr-2"
+          >
+            {showDebug ? 'Hide Debug' : 'Show Debug'}
+          </button>
+          <button
+            onClick={exitRoom}
+            className="bg-gray-800 text-white px-3 py-1 rounded"
+          >
+            Leave Room
+          </button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
@@ -158,7 +168,11 @@ export default function Game() {
 
       {gameState.gameOver && <GameOverScreen />}
 
-      <pre>{JSON.stringify(gameState, null, 2)}</pre>
+      {showDebug && (
+        <pre className="bg-gray-100 p-2 overflow-auto mt-2">
+          {JSON.stringify(gameState, null, 2)}
+        </pre>
+      )}
     </div>
   );
 }
