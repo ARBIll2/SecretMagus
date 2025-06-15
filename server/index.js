@@ -241,19 +241,18 @@ io.on('connection', (socket) => {
 
       // If a game is active, treat the disconnecting player as executed
       if (room.game && room.game.phase !== PHASES.GAME_OVER) {
-        const gPlayer = room.game.players.find((p) => p.id === socket.id);
-        if (gPlayer && gPlayer.alive) {
-          gPlayer.alive = false;
-          room.game.history.push({ type: 'DISCONNECT', player: socket.id });
-          logEvent(code, 'PLAYER_DISCONNECT', socket.id);
-
-          if (gPlayer.role === ROLES.HITLER) {
-            const result = { winner: 'LIBERALS', reason: 'HITLER_EXECUTED' };
-            room.game.phase = PHASES.GAME_OVER;
-            io.to(code).emit(MESSAGE_TYPES.GAME_OVER, result);
+        const outcome = gameEngine.handleDisconnect(room, socket.id);
+        logEvent(code, 'PLAYER_DISCONNECT', socket.id);
+        if (outcome) {
+          if (outcome.autoResult) {
+            io.to(code).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.autoResult);
+            if (outcome.autoResult.gameOver) {
+              io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
+            }
+          } else if (outcome.gameOver) {
+            io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.gameOver);
           }
         }
-        room.players.splice(playerIndex, 1);
         io.to(code).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
       } else {
         roomManager.removePlayer(code, socket.id);
