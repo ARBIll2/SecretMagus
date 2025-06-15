@@ -20,12 +20,11 @@
 ## ✅ Completed (continued)
 - Basic phase state machine added for switching between Lobby and Game views
 
+## ✅ Completed (continued)
+- Basic phase state machine added for switching between Lobby and Game views
+
 ## 🔨 In Progress
 - Additional UX cues for executed players and game over screens
-
-## 🕳️ Missing / Skipped Logic
-- Build step for bundling client scripts and global styles
-
 
 ## 🧠 Needs Design Decision
 - Long-term room persistence for multi-server deployment
