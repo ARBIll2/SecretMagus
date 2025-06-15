@@ -202,6 +202,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Lobby now displays joined players and room code. Only the host may start the game once five or more players have joined. Clients stay in the lobby until the `GAME_START` message arrives.
 - Players may leave a room before the game starts via `LEAVE_ROOM`. Disconnecting during a game now marks that player as executed and ends the game if Hitler disconnects.
 - Leaving via `LEAVE_ROOM` after the game has begun is treated the same as a disconnect and executes that player.
+- The client now prompts for confirmation before sending `LEAVE_ROOM` during an active game.
 - Disconnects are handled inside the game engine. If a disconnecting player was part of the active government, the election fails and the tracker advances. No role information is revealed unless Hitler was executed.
 - Auto policy results from the Election Tracker are now broadcast to all players to maintain sync.
 - Client tracks current nomination and displays vote results to improve transparency.
