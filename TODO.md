@@ -43,6 +43,8 @@
   are treated as executions without leaking roles. If the disconnecting player
   was part of the government the election now fails and advances the tracker.
 - Added unit tests covering disconnect outcomes and Hitler disconnect victory.
+- Leaving a game via `LEAVE_ROOM` after it starts now triggers the same
+  execution logic as a disconnect and can end the game if Hitler leaves.
 
 ### Additional in this wave
 - Added unit tests for policy processing including Policy Peek power and veto
@@ -62,3 +64,5 @@
 - Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
 - Expand unit tests for remaining presidential powers and edge cases. Integrate tests with CI.
 - Improve UI styling for board and player list.
+- Consider adding a confirmation or restriction when players attempt to leave
+  mid-game.
