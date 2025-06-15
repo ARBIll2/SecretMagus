@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { GameStateContext } from './GameStateContext.js';
+import { GameStateContext } from './GameStateContext.jsx';
 
 /**
  * Displays the current board state: enacted policies and election tracker.

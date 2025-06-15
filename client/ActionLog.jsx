@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { GameStateContext } from './GameStateContext.js';
+import { GameStateContext } from './GameStateContext.jsx';
 
 /**
  * Displays a list of public actions taken in the game.

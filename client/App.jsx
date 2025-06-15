@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import Lobby from './Lobby.jsx';
 import Game from './Game.jsx';
-import GameStateProvider, { GameStateContext } from './GameStateContext.js';
+import GameStateProvider, { GameStateContext } from './GameStateContext.jsx';
 import usePhaseMachine, { APP_PHASES } from './usePhaseMachine.js';
 
 /**
