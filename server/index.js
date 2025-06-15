@@ -19,8 +19,11 @@ const __dirname = path.dirname(__filename);
  * Handles basic connection events.
  */
 const app = express();
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*'}));
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+app.use(express.json());
+app.use(
+  express.static(path.join(__dirname, '..', 'public'), { index: false })
+);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -441,7 +444,7 @@ io.on('connection', (socket) => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  res.send('Backend running!');
 });
 
 const PORT = process.env.PORT || 3000;
