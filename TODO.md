@@ -16,6 +16,7 @@
 - Reconnection support for players who refresh or temporarily lose connection
 - Polish layout for main game UI components
 - Developer debug toggle for viewing game state
+- Player portrait system with role-based reveal
 
 ## ✅ Completed (continued)
 - Basic phase state machine added for switching between Lobby and Game views

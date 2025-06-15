@@ -84,10 +84,14 @@ const ROLE_DISTRIBUTION = {
   10: { liberals: 6, fascists: 3, hitler: 1 },
 };
 
+// Available portrait identifiers
+const PORTRAITS = ['squirrel', 'robot', 'wizard', 'frog'];
+
 module.exports = {
   ROLES,
   PHASES,
   POWERS,
   FASCIST_POWERS,
   ROLE_DISTRIBUTION,
+  PORTRAITS,
 };

@@ -1,13 +1,21 @@
 "use strict";
 
-const { ROLES } = require("../../shared/constants.js");
+const { ROLES, PORTRAITS } = require("../../shared/constants.js");
 const { createBot } = require("./BotEngine.js");
 
 const botsByRoom = {};
 
 function addBotToRoom(room, role, name) {
   const bot = createBot(role, name);
-  room.players.push({ id: name, name, role, socketId: null });
+  const portrait = PORTRAITS[Math.floor(Math.random() * PORTRAITS.length)];
+  room.players.push({
+    id: name,
+    name,
+    role,
+    socketId: null,
+    portrait,
+    isBot: true,
+  });
   if (!botsByRoom[room.code]) botsByRoom[room.code] = [];
   botsByRoom[room.code].push(bot);
   return bot;

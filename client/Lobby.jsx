@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { GameStateContext } from './GameStateContext.js';
 import { MESSAGE_TYPES } from '../shared/messages.js';
+import { PORTRAITS } from '../shared/constants.js';
 
 /**
  * Lobby view for entering a name and room code.
@@ -10,13 +11,16 @@ export default function Lobby() {
   const { socket, gameState, playerId, leaveRoom } = useContext(GameStateContext);
   const [name, setName] = useState('');
   const [roomCode, setRoomCode] = useState('');
+  const [portrait, setPortrait] = useState(PORTRAITS[0]);
 
   const createRoom = () => {
-    if (socket) socket.emit(MESSAGE_TYPES.CREATE_ROOM, { name, playerId });
+    if (socket)
+      socket.emit(MESSAGE_TYPES.CREATE_ROOM, { name, portrait, playerId });
   };
 
   const joinRoom = () => {
-    if (socket) socket.emit(MESSAGE_TYPES.JOIN_ROOM, { name, roomCode, playerId });
+    if (socket)
+      socket.emit(MESSAGE_TYPES.JOIN_ROOM, { name, roomCode, portrait, playerId });
   };
 
   const startGame = () => {
@@ -44,6 +48,17 @@ export default function Lobby() {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
+      <select
+        value={portrait}
+        onChange={(e) => setPortrait(e.target.value)}
+        className="ml-2"
+      >
+        {PORTRAITS.map((p) => (
+          <option key={p} value={p}>
+            {p}
+          </option>
+        ))}
+      </select>
       <input
         type="text"
         placeholder="Room code"

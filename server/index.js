@@ -13,6 +13,7 @@ const { prepareChat } = require('./chat.js');
  * Handles basic connection events.
  */
 const app = express();
+app.use(express.static('public'));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -86,16 +87,16 @@ function sendPendingPrompts(socket, room, playerId) {
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  socket.on(MESSAGE_TYPES.CREATE_ROOM, ({ name, playerId }) => {
+  socket.on(MESSAGE_TYPES.CREATE_ROOM, ({ name, portrait, playerId }) => {
     const id = playerId || randomUUID();
-    const player = { id, name, socketId: socket.id };
+    const player = { id, name, socketId: socket.id, portrait, isBot: false };
     const code = roomManager.createRoom(player);
     socket.join(code);
     socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId: id, roomCode: code });
     emitRoomUpdate(code);
   });
 
-  socket.on(MESSAGE_TYPES.JOIN_ROOM, ({ name, roomCode, playerId }) => {
+  socket.on(MESSAGE_TYPES.JOIN_ROOM, ({ name, roomCode, portrait, playerId }) => {
     const room = roomManager.getRoomByCode(roomCode);
     if (!room) {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
@@ -106,6 +107,7 @@ io.on('connection', (socket) => {
       const existing = room.players.find((p) => p.id === playerId);
       if (existing) {
         existing.name = name || existing.name;
+        existing.portrait = portrait || existing.portrait;
         existing.socketId = socket.id;
         socket.join(roomCode);
         socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId, roomCode });
@@ -124,7 +126,7 @@ io.on('connection', (socket) => {
     }
 
     const id = playerId || randomUUID();
-    const player = { id, name, socketId: socket.id };
+    const player = { id, name, socketId: socket.id, portrait, isBot: false };
     if (roomManager.joinRoom(roomCode, player)) {
       socket.join(roomCode);
       socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId: id, roomCode });

@@ -52,13 +52,22 @@ function getGrantedPower(state) {
 function checkVictory(state) {
   if (state.enactedPolicies.liberal >= 5) {
     state.phase = PHASES.GAME_OVER;
+    revealAll(state);
     return { winner: 'LIBERALS', reason: 'LIBERAL_POLICIES' };
   }
   if (state.enactedPolicies.fascist >= 6) {
     state.phase = PHASES.GAME_OVER;
+    revealAll(state);
     return { winner: 'FASCISTS', reason: 'FASCIST_POLICIES' };
   }
   return null;
+}
+
+function revealAll(state) {
+  const ids = state.players.map((p) => p.id);
+  state.players.forEach((p) => {
+    p.isRevealedTo = [...ids];
+  });
 }
 
 /**
@@ -109,9 +118,12 @@ function startGame(room) {
       name: p.name,
       role: p.role,
       socketId: p.socketId,
+      portrait: p.portrait,
+      isBot: !!p.isBot,
       alive: true,
       hasVoted: false,
       vote: null,
+      isRevealedTo: [],
     })),
     phase: PHASES.NOMINATE,
     presidentIndex: firstPresident,
@@ -132,6 +144,19 @@ function startGame(room) {
     investigatedIds: [],
     specialElectionReturnIndex: null,
   };
+
+  // Initialize role visibility
+  const fascists = room.game.players.filter((p) => p.role === ROLES.FASCIST);
+  const hitler = room.game.players.find((p) => p.role === ROLES.HITLER);
+  fascists.forEach((f) => {
+    fascists.forEach((other) => {
+      if (other.id !== f.id) f.isRevealedTo.push(other.id);
+    });
+    hitler.isRevealedTo.push(f.id);
+    if (room.game.players.length <= 6) {
+      f.isRevealedTo.push(hitler.id);
+    }
+  });
 }
 
 /**
@@ -236,6 +261,7 @@ function handleVote(room, playerId, vote) {
         state.enactedPolicies.fascist >= 3
       ) {
         state.phase = PHASES.GAME_OVER;
+        revealAll(state);
         return {
           completed: true,
           passed,
@@ -444,6 +470,9 @@ function handlePower(room, playerId, action) {
     if (state.investigatedIds.includes(target.id)) return null;
     state.investigatedIds.push(target.id);
     const membership = target.role === ROLES.LIBERAL ? 'LIBERAL' : 'FASCIST';
+    if (!target.isRevealedTo.includes(playerId)) {
+      target.isRevealedTo.push(playerId);
+    }
     state.history.push({ type: 'INVESTIGATE', president: playerId, target: target.id });
 
     // cleanup and advance round
@@ -507,6 +536,7 @@ function handlePower(room, playerId, action) {
       state.phase = PHASES.NOMINATE;
     } else {
       state.phase = PHASES.GAME_OVER;
+      revealAll(state);
     }
 
     return { power: POWERS.EXECUTION, targetId: target.id, targetName: target.name, gameOver: victory, broadcast: true };
@@ -538,6 +568,7 @@ function handleDisconnect(room, playerId) {
 
   if (player.role === ROLES.HITLER) {
     state.phase = PHASES.GAME_OVER;
+    revealAll(state);
     return { gameOver: { winner: 'LIBERALS', reason: 'HITLER_EXECUTED' } };
   }
 
