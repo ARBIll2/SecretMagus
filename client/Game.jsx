@@ -4,6 +4,8 @@ import { MESSAGE_TYPES } from '../shared/messages.js';
 import { PHASES } from '../shared/constants.js';
 import Board from './Board.jsx';
 import PlayerList from './PlayerList.jsx';
+import ActionLog from './ActionLog.jsx';
+import Tips from './Tips.jsx';
 
 /**
  * Main game UI. Renders based on current game state from context.
@@ -218,6 +220,9 @@ export default function Game() {
           </ul>
         </div>
       )}
+
+      <Tips />
+      <ActionLog />
 
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
       {/* TODO: replace with proper components for each game phase */}

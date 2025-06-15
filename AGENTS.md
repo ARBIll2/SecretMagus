@@ -206,6 +206,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
   game engine nomination rules.
 - First Presidential Candidate now chosen randomly (Rules: Setup step 4).
 - Added tests for vote majority, election tracker auto policy, and Hitler election victory.
+- Added AI tips system and public action log. Tips use only visible information and a player's own role to avoid leaking secrets.
 
 
 
@@ -256,3 +257,4 @@ Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ig
 Feature | Status | Notes
 --- | --- | ---
 Automated tests | ✅ | Added coverage for policy processing, Policy Peek power, and veto flow
+AI tips & action log | ✅ | Client displays suggestions and history using only public data

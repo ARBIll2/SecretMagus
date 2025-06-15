@@ -50,6 +50,12 @@
 - Added unit tests for policy processing including Policy Peek power and veto
   flow.
 
+### Completed in this wave
+- Added simple AI tips system providing players with suggestions based on game
+  state.
+- Implemented `ActionLog` component to display public history entries.
+- Created unit tests for the tip engine.
+
 ### Previous wave
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
   `shuffleDeck` and Chancellor nomination eligibility.
@@ -66,3 +72,5 @@
 - Improve UI styling for board and player list.
 - Consider adding a confirmation or restriction when players attempt to leave
   mid-game.
+- Enhance tips engine with tracking of past actions to offer more advanced
+  strategic advice.
