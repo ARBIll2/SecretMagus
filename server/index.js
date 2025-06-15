@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const { randomUUID } = require('crypto');
 const roomManager = require('./roomManager.js');
 const gameEngine = require('./gameEngine.js');
 const { MESSAGE_TYPES } = require('../shared/messages.js');
@@ -18,6 +19,8 @@ const io = new Server(server, {
   },
 });
 
+const DISCONNECT_TIMEOUT = 30000; // ms to wait before treating disconnect as execution
+
 function logEvent(roomCode, event, details = '') {
   console.log(`[${roomCode}] ${event}`, details);
 }
@@ -34,23 +37,119 @@ function emitRoomUpdate(roomCode, room) {
   }
 }
 
+function getPlayerId(room, socketId) {
+  const player = room.players.find((p) => p.socketId === socketId);
+  return player ? player.id : null;
+}
+
+function sendPendingPrompts(socket, room, playerId) {
+  const game = room.game;
+  if (!game) return;
+  const idx = game.players.findIndex((p) => p.id === playerId);
+  if (idx === -1) return;
+  const president = game.players[game.presidentIndex];
+  const chancellor = game.players[game.chancellorIndex];
+
+  if (game.phase === PHASES.POLICY && game.policyHand) {
+    if (game.policyStep === 'PRESIDENT' && president.id === playerId) {
+      socket.emit(MESSAGE_TYPES.POLICY_PROMPT, { policies: [...game.policyHand], canVeto: false });
+    } else if (game.policyStep === 'CHANCELLOR' && chancellor && chancellor.id === playerId) {
+      socket.emit(MESSAGE_TYPES.POLICY_PROMPT, {
+        policies: [...game.policyHand],
+        canVeto: game.enactedPolicies.fascist >= 5,
+      });
+    } else if (game.policyStep === 'VETO' && president.id === playerId) {
+      socket.emit(MESSAGE_TYPES.VETO_PROMPT);
+    }
+  }
+
+  if (
+    game.phase === PHASES.POWER &&
+    game.pendingPower &&
+    game.powerPresidentId === playerId
+  ) {
+    if (game.pendingPower === POWERS.POLICY_PEEK) {
+      const result = gameEngine.handlePower(room, playerId, {});
+      socket.emit(MESSAGE_TYPES.POWER_RESULT, result);
+    } else {
+      socket.emit(MESSAGE_TYPES.POWER_PROMPT, {
+        power: game.pendingPower,
+        players: game.players
+          .filter((p) => p.alive)
+          .map((p) => ({ id: p.id, name: p.name })),
+      });
+    }
+  }
+}
+
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  socket.on(MESSAGE_TYPES.CREATE_ROOM, ({ name }) => {
-    const player = { id: socket.id, name };
+  socket.on(MESSAGE_TYPES.CREATE_ROOM, ({ name, playerId }) => {
+    const id = playerId || randomUUID();
+    const player = { id, name, socketId: socket.id };
     const code = roomManager.createRoom(player);
     socket.join(code);
+    socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId: id, roomCode: code });
     emitRoomUpdate(code);
   });
 
-  socket.on(MESSAGE_TYPES.JOIN_ROOM, ({ name, roomCode }) => {
-    const player = { id: socket.id, name };
+  socket.on(MESSAGE_TYPES.JOIN_ROOM, ({ name, roomCode, playerId }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+      return;
+    }
+
+    if (playerId) {
+      const existing = room.players.find((p) => p.id === playerId);
+      if (existing) {
+        existing.name = name || existing.name;
+        existing.socketId = socket.id;
+        socket.join(roomCode);
+        socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId, roomCode });
+        if (room.disconnectTimers[playerId]) {
+          clearTimeout(room.disconnectTimers[playerId]);
+          delete room.disconnectTimers[playerId];
+        }
+        emitRoomUpdate(roomCode, room);
+        if (room.game) {
+          const knowledge = gameEngine.getInitialKnowledge(room.game);
+          socket.emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, knowledge[playerId]);
+          sendPendingPrompts(socket, room, playerId);
+        }
+        return;
+      }
+    }
+
+    const id = playerId || randomUUID();
+    const player = { id, name, socketId: socket.id };
     if (roomManager.joinRoom(roomCode, player)) {
       socket.join(roomCode);
+      socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId: id, roomCode });
       emitRoomUpdate(roomCode);
     } else {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
+    }
+  });
+
+  socket.on(MESSAGE_TYPES.RECONNECT, ({ roomCode, playerId }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room) return;
+    const player = room.players.find((p) => p.id === playerId);
+    if (!player) return;
+    player.socketId = socket.id;
+    socket.join(roomCode);
+    socket.emit(MESSAGE_TYPES.ASSIGN_PLAYER_ID, { playerId, roomCode });
+    if (room.disconnectTimers[playerId]) {
+      clearTimeout(room.disconnectTimers[playerId]);
+      delete room.disconnectTimers[playerId];
+    }
+    emitRoomUpdate(roomCode, room);
+    if (room.game) {
+      const knowledge = gameEngine.getInitialKnowledge(room.game);
+      socket.emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, knowledge[playerId]);
+      sendPendingPrompts(socket, room, playerId);
     }
   });
 
@@ -59,10 +158,11 @@ io.on('connection', (socket) => {
     if (!room) return;
 
     socket.leave(roomCode);
+    const playerId = getPlayerId(room, socket.id);
 
-    if (room.game && room.game.phase !== PHASES.GAME_OVER) {
-      const outcome = gameEngine.handleDisconnect(room, socket.id);
-      logEvent(roomCode, 'PLAYER_LEAVE', socket.id);
+    if (room.game && room.game.phase !== PHASES.GAME_OVER && playerId) {
+      const outcome = gameEngine.handleDisconnect(room, playerId);
+      logEvent(roomCode, 'PLAYER_LEAVE', playerId);
 
       if (outcome) {
         if (outcome.autoResult) {
@@ -75,13 +175,13 @@ io.on('connection', (socket) => {
         }
       }
 
-        emitRoomUpdate(roomCode, room);
+      emitRoomUpdate(roomCode, room);
     } else {
-      roomManager.removePlayer(roomCode, socket.id);
+      if (playerId) roomManager.removePlayer(roomCode, playerId);
       const updated = roomManager.getRoomByCode(roomCode);
-        if (updated) {
-          emitRoomUpdate(roomCode, updated);
-        }
+      if (updated) {
+        emitRoomUpdate(roomCode, updated);
+      }
     }
   });
 
@@ -96,7 +196,7 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit(MESSAGE_TYPES.GAME_START, room.game);
     const knowledge = gameEngine.getInitialKnowledge(room.game);
     room.players.forEach((p) => {
-      io.to(p.id).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, knowledge[p.id]);
+      if (p.socketId) io.to(p.socketId).emit(MESSAGE_TYPES.ROLE_ASSIGNMENT, knowledge[p.id]);
     });
     emitRoomUpdate(roomCode, room);
   });
@@ -107,11 +207,12 @@ io.on('connection', (socket) => {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const success = gameEngine.nominateChancellor(room, socket.id, nomineeId);
+    const playerId = getPlayerId(room, socket.id);
+    const success = gameEngine.nominateChancellor(room, playerId, nomineeId);
     if (success) {
-      logEvent(roomCode, 'NOMINATION', `${socket.id} -> ${nomineeId}`);
+      logEvent(roomCode, 'NOMINATION', `${playerId} -> ${nomineeId}`);
       io.to(roomCode).emit(MESSAGE_TYPES.VOTE_REQUEST, {
-        presidentId: socket.id,
+        presidentId: playerId,
         nomineeId,
       });
       emitRoomUpdate(roomCode, room);
@@ -124,7 +225,8 @@ io.on('connection', (socket) => {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const result = gameEngine.handleVote(room, socket.id, vote);
+    const playerId = getPlayerId(room, socket.id);
+    const result = gameEngine.handleVote(room, playerId, vote);
     if (result && result.completed) {
       logEvent(roomCode, 'VOTE_RESULT', result.passed ? 'passed' : 'failed');
       io.to(roomCode).emit(MESSAGE_TYPES.VOTE_RESULT, {
@@ -143,8 +245,8 @@ io.on('connection', (socket) => {
       }
       if (room.game.phase === PHASES.POLICY) {
         const policies = gameEngine.beginPolicyPhase(room);
-        const presidentId = room.game.players[room.game.presidentIndex].id;
-        io.to(presidentId).emit(MESSAGE_TYPES.POLICY_PROMPT, { policies });
+        const president = room.game.players[room.game.presidentIndex];
+        io.to(president.socketId).emit(MESSAGE_TYPES.POLICY_PROMPT, { policies });
       }
       if (room.game.phase === PHASES.POWER) {
         if (room.game.pendingPower === POWERS.POLICY_PEEK) {
@@ -153,11 +255,12 @@ io.on('connection', (socket) => {
             room.game.powerPresidentId,
             {}
           );
-          io
-            .to(room.game.powerPresidentId)
-            .emit(MESSAGE_TYPES.POWER_RESULT, result);
+          const pres = room.game.players.find((p) => p.id === room.game.powerPresidentId);
+          if (pres)
+            io.to(pres.socketId).emit(MESSAGE_TYPES.POWER_RESULT, result);
         } else {
-          io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+          const pres = room.game.players.find((p) => p.id === room.game.powerPresidentId);
+          if (pres) io.to(pres.socketId).emit(MESSAGE_TYPES.POWER_PROMPT, {
             power: room.game.pendingPower,
             players: room.game.players
               .filter((p) => p.alive)
@@ -175,13 +278,16 @@ io.on('connection', (socket) => {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const outcome = gameEngine.handlePolicyChoice(room, socket.id, { policy, veto });
+    const playerId = getPlayerId(room, socket.id);
+    const outcome = gameEngine.handlePolicyChoice(room, playerId, { policy, veto });
     if (outcome) {
       if (outcome.promptPlayerId) {
+        const target = room.game.players.find((p) => p.id === outcome.promptPlayerId);
         if (outcome.veto) {
-          io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.VETO_PROMPT);
+          if (target) io.to(target.socketId).emit(MESSAGE_TYPES.VETO_PROMPT);
         } else {
-          io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
+          if (target)
+            io.to(target.socketId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
             policies: outcome.policies,
             canVeto: outcome.canVeto,
           });
@@ -194,12 +300,14 @@ io.on('connection', (socket) => {
           io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.result.gameOver);
         }
         if (room.game.phase === PHASES.POWER) {
-          io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
-            power: room.game.pendingPower,
-            players: room.game.players
-              .filter((p) => p.alive)
-              .map((p) => ({ id: p.id, name: p.name })),
-          });
+          const pres = room.game.players.find((p) => p.id === room.game.powerPresidentId);
+          if (pres)
+            io.to(pres.socketId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+              power: room.game.pendingPower,
+              players: room.game.players
+                .filter((p) => p.alive)
+                .map((p) => ({ id: p.id, name: p.name })),
+            });
         }
       }
         emitRoomUpdate(roomCode, room);
@@ -212,12 +320,14 @@ io.on('connection', (socket) => {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const outcome = gameEngine.handleVetoDecision(room, socket.id, accept);
+    const playerId = getPlayerId(room, socket.id);
+    const outcome = gameEngine.handleVetoDecision(room, playerId, accept);
     if (outcome) {
       io.to(roomCode).emit(MESSAGE_TYPES.VETO_RESULT, { accepted: outcome.accepted });
       logEvent(roomCode, 'VETO_DECISION', outcome.accepted ? 'accepted' : 'rejected');
       if (outcome.promptPlayerId) {
-        io.to(outcome.promptPlayerId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
+        const target = room.game.players.find((p) => p.id === outcome.promptPlayerId);
+        if (target) io.to(target.socketId).emit(MESSAGE_TYPES.POLICY_PROMPT, {
           policies: outcome.policies,
           canVeto: outcome.canVeto,
         });
@@ -229,7 +339,8 @@ io.on('connection', (socket) => {
           io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
         }
         if (room.game.phase === PHASES.POWER) {
-          io.to(room.game.powerPresidentId).emit(MESSAGE_TYPES.POWER_PROMPT, {
+          const pres = room.game.players.find((p) => p.id === room.game.powerPresidentId);
+          if (pres) io.to(pres.socketId).emit(MESSAGE_TYPES.POWER_PROMPT, {
             power: room.game.pendingPower,
             players: room.game.players
               .filter((p) => p.alive)
@@ -247,13 +358,16 @@ io.on('connection', (socket) => {
       socket.emit(MESSAGE_TYPES.ROOM_UPDATE, { error: 'Room not found' });
       return;
     }
-    const result = gameEngine.handlePower(room, socket.id, action);
+    const playerId = getPlayerId(room, socket.id);
+    const result = gameEngine.handlePower(room, playerId, action);
     if (result) {
       logEvent(roomCode, 'POWER', result.power);
       if (result.broadcast) {
         io.to(roomCode).emit(MESSAGE_TYPES.POWER_RESULT, result);
       } else {
-        io.to(socket.id).emit(MESSAGE_TYPES.POWER_RESULT, result);
+        const target = room.players.find((p) => p.id === playerId);
+        if (target)
+          io.to(target.socketId).emit(MESSAGE_TYPES.POWER_RESULT, result);
       }
       if (result.gameOver) {
         io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, result.gameOver);
@@ -268,30 +382,33 @@ io.on('connection', (socket) => {
     roomManager.listRooms().forEach((code) => {
       const room = roomManager.getRoomByCode(code);
       if (!room) return;
-      const playerIndex = room.players.findIndex((p) => p.id === socket.id);
-      if (playerIndex === -1) return;
+      const player = room.players.find((p) => p.socketId === socket.id);
+      if (!player) return;
 
-      // If a game is active, treat the disconnecting player as executed
+      player.socketId = null;
+
       if (room.game && room.game.phase !== PHASES.GAME_OVER) {
-        const outcome = gameEngine.handleDisconnect(room, socket.id);
-        logEvent(code, 'PLAYER_DISCONNECT', socket.id);
-        if (outcome) {
-          if (outcome.autoResult) {
-            io.to(code).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.autoResult);
-            if (outcome.autoResult.gameOver) {
-              io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
+        room.disconnectTimers[player.id] = setTimeout(() => {
+          const outcome = gameEngine.handleDisconnect(room, player.id);
+          logEvent(code, 'PLAYER_DISCONNECT', player.id);
+          if (outcome) {
+            if (outcome.autoResult) {
+              io.to(code).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.autoResult);
+              if (outcome.autoResult.gameOver) {
+                io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
+              }
+            } else if (outcome.gameOver) {
+              io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.gameOver);
             }
-          } else if (outcome.gameOver) {
-            io.to(code).emit(MESSAGE_TYPES.GAME_OVER, outcome.gameOver);
           }
-        }
           emitRoomUpdate(code, room);
+        }, DISCONNECT_TIMEOUT);
       } else {
-        roomManager.removePlayer(code, socket.id);
+        roomManager.removePlayer(code, player.id);
         const updated = roomManager.getRoomByCode(code);
-          if (updated) {
-            emitRoomUpdate(code, updated);
-          }
+        if (updated) {
+          emitRoomUpdate(code, updated);
+        }
       }
     });
   });

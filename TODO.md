@@ -13,9 +13,13 @@
 - Room updates broadcast after every state change
 - Expand test coverage for remaining edge cases and powers
 - Improved styling for the board and player list
+- Reconnection support for players who refresh or temporarily lose connection
 
 ## 🔨 In Progress
 - Polish layout for main game UI components
+
+## 🔜 Next Tasks
+- Additional UX cues for executed players and game over screens
 
 
 ## 🧠 Needs Design Decision
@@ -23,8 +27,6 @@
 - Long-term room persistence for multi-server deployment
 
 ## 🕳️ Missing / Skipped Logic
-- Reconnection support for players who refresh or temporarily lose connection
-- Additional UX cues for executed players and game over screens
 
 ## ⏳ Low Priority / Post-MVP
 - Enhanced tips engine tracking past actions for better suggestions

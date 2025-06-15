@@ -108,6 +108,7 @@ function startGame(room) {
       id: p.id,
       name: p.name,
       role: p.role,
+      socketId: p.socketId,
       alive: true,
       hasVoted: false,
       vote: null,

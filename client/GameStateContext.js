@@ -36,7 +36,17 @@ export default function GameStateProvider({ children }) {
     setSocket(sock);
 
     sock.on('connect', () => {
-      setPlayerId(sock.id);
+      const savedId = localStorage.getItem('playerId');
+      const savedRoom = localStorage.getItem('roomCode');
+      if (savedId && savedRoom) {
+        sock.emit(MESSAGE_TYPES.RECONNECT, { roomCode: savedRoom, playerId: savedId });
+      }
+    });
+
+    sock.on(MESSAGE_TYPES.ASSIGN_PLAYER_ID, ({ playerId, roomCode }) => {
+      setPlayerId(playerId);
+      localStorage.setItem('playerId', playerId);
+      if (roomCode) localStorage.setItem('roomCode', roomCode);
     });
 
     // Listen for room and game state updates
@@ -118,6 +128,7 @@ export default function GameStateProvider({ children }) {
     if (socket) {
       socket.emit(MESSAGE_TYPES.LEAVE_ROOM, { roomCode });
     }
+    localStorage.removeItem('roomCode');
     resetState();
   };
 
