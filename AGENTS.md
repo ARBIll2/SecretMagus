@@ -126,11 +126,12 @@ Use a `messageType` dispatch pattern:
 ---
 
 ## 📐 Best Practice Coding Guidelines
-- Keep all game logic server-side; never trust the client.
-- Use enums/constants for phases, roles, and messages to avoid string errors.
-- Modularize logic per game phase.
+- Keep all game logic **server-side**; never trust the client with hidden roles or state.
+- Use enums/constants for phases, roles and messages to avoid string errors.
+- Modularize logic per game phase and keep handlers small.
 - Strictly validate input and reject malformed or out-of-order actions.
 - Maintain clear separation of concerns: game logic vs communication vs UI.
+- Always verify win conditions and phase transitions after any state mutation.
 - Log every significant state change (for debugging and auditing).
 - Keep sockets organized with event-based handlers.
 
@@ -159,7 +160,6 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Keep all UI mobile-friendly from the start.
 - Tailwind CSS is currently loaded via CDN in `client/index.html` until a build step is added.
 - Chancellor term limit logic now enforced in `gameEngine.js`.
-- Chancellor term limit logic now enforced in `gameEngine.js`.
 - Investigate Loyalty implemented; remember to send POWER_PROMPT only to the acting President and POWER_RESULT only to them.
 - Special Election power implemented. The President selects any alive player for the next Presidential Candidate. After that election, presidency returns left of the original President.
 - Policy Peek power implemented. The top three policies are shown privately to the President.
@@ -187,6 +187,8 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Run `npm test` before committing to ensure all tests pass.
 - After mutating game state on the server, call `emitRoomUpdate` so all clients stay in sync.
 - Never expose secret roles or policy choices to the client except through dedicated prompts.
+- Never put role or win-condition logic on the client.
+- Disconnecting players are considered executed if they fail to return within 30 seconds.
 - Review win conditions and phase transitions for every new feature, including disconnect and term limit edge cases.
 
 ### Rule Implementation Notes
@@ -233,6 +235,7 @@ Codex agents and contributors must ensure every gameplay feature aligns with **R
 9. **Logging & Validation** – Log all state changes and cross-check against RULES.md when implementing new features.
 10. **Executed Players** – Server enforces that executed players cannot vote or hold office. UI still needs cues and restrictions.
 11. **Vote Majority** – Count only alive players when determining if a government is elected (Rules: Election step 4).
+12. **Victory Checks** – Evaluate win conditions after every policy enactment and power use.
 
 Before merging any change, verify the checklist above and update tests to cover new logic.
 
@@ -253,7 +256,6 @@ UI reactivity | Partial | React components display basic prompts but lack polish
 Socket message handling | ✅ | Client and server support defined message types
 Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ignores powers
 
-- Current blockers:
 - Current blockers:
   - Improve overall styling and usability for playtesting
 
