@@ -19,6 +19,7 @@ export default function GameStateProvider({ children }) {
   const [powerResult, setPowerResult] = useState(null);
   const [playerId, setPlayerId] = useState(null);
   const [nomination, setNomination] = useState(null);
+  const [chatLog, setChatLog] = useState([]);
 
   const resetState = () => {
     setGameState({});
@@ -29,6 +30,7 @@ export default function GameStateProvider({ children }) {
     setPowerPrompt(null);
     setPowerResult(null);
     setNomination(null);
+    setChatLog([]);
   };
 
   useEffect(() => {
@@ -111,6 +113,10 @@ export default function GameStateProvider({ children }) {
       setPolicyPrompt(null);
     });
 
+    sock.on(MESSAGE_TYPES.CHAT_RECEIVE, (msg) => {
+      setChatLog((prev) => [...prev, msg]);
+    });
+
     sock.on(MESSAGE_TYPES.GAME_OVER, (result) => {
       setGameState((prev) => ({
         ...prev,
@@ -141,6 +147,12 @@ export default function GameStateProvider({ children }) {
     resetState();
   };
 
+  const sendChat = (roomCode, message, to = 'global') => {
+    if (socket) {
+      socket.emit(MESSAGE_TYPES.CHAT_SEND, { roomCode, message, to });
+    }
+  };
+
   return (
     <GameStateContext.Provider
       value={{
@@ -154,6 +166,8 @@ export default function GameStateProvider({ children }) {
         playerId,
         nomination,
         vetoPrompt,
+        chatLog,
+        sendChat,
         leaveRoom,
       }}
     >

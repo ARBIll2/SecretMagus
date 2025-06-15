@@ -27,6 +27,8 @@ const MESSAGE_TYPES = Object.freeze({
   RECONNECT: 'RECONNECT',
   ASSIGN_PLAYER_ID: 'ASSIGN_PLAYER_ID',
   GAME_OVER: 'GAME_OVER',
+  CHAT_SEND: 'chat:send',
+  CHAT_RECEIVE: 'chat:receive',
 });
 
 module.exports = {

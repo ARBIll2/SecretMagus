@@ -12,6 +12,7 @@ import VetoPrompt from './VetoPrompt.jsx';
 import PowerPanel from './PowerPanel.jsx';
 import ExecutedOverlay from './ExecutedOverlay.jsx';
 import GameOverScreen from './GameOverScreen.jsx';
+import ChatBox from './ChatBox.jsx';
 
 /**
  * Main game UI. Renders based on current game state from context.
@@ -152,6 +153,8 @@ export default function Game() {
         <Tips />
         <ActionLog />
       </div>
+
+      <ChatBox />
 
       {gameState.gameOver && <GameOverScreen />}
 
