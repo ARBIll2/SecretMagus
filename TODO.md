@@ -15,14 +15,14 @@
 - Improved styling for the board and player list
 - Reconnection support for players who refresh or temporarily lose connection
 - Polish layout for main game UI components
+- Build step for bundling client scripts and global styles
 
 ## 🔨 In Progress
 - Additional UX cues for executed players and game over screens
+- Add proper routing or state machine to manage phases
 
 ## 🕳️ Missing / Skipped Logic
 - Replace debug JSON dump in Game.jsx with a dedicated developer toggle
-- Add proper routing or state machine to manage phases
-- Build step for bundling client scripts and global styles
 
 
 ## 🧠 Needs Design Decision

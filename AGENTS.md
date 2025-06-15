@@ -158,7 +158,7 @@ Use Tailwind CSS to ensure responsive layout, and structure all UI elements in a
 - Add simple log on server to trace game state changes.
 - Use mock players for testing (e.g., 5 bots).
 - Keep all UI mobile-friendly from the start.
-- Tailwind CSS is currently loaded via CDN in `client/index.html` until a build step is added.
+- Tailwind CSS is still loaded via CDN. Run `npm run build` to bundle client scripts and global styles into `public/bundle.js` and `public/bundle.css`.
 - Chancellor term limit logic now enforced in `gameEngine.js`.
 - Investigate Loyalty implemented; remember to send POWER_PROMPT only to the acting President and POWER_RESULT only to them.
 - Special Election power implemented. The President selects any alive player for the next Presidential Candidate. After that election, presidency returns left of the original President.
