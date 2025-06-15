@@ -12,18 +12,26 @@ export default function PlayerList() {
   if (!game) return null;
 
   return (
-    <div>
-      <h3>Players</h3>
-      <ol>
+    <div className="player-list bg-white p-4 rounded shadow max-w-md mx-auto mb-4">
+      <h3 className="text-xl font-bold mb-2">Players</h3>
+      <ol className="space-y-1">
         {game.players.map((p, idx) => {
           const isPresident = idx === game.presidentIndex;
           const isChancellor = idx === game.chancellorIndex;
+          const deadStyles = !p.alive ? 'line-through text-gray-500' : '';
           return (
-            <li key={p.id}>
-              {p.name}
-              {!p.alive && ' (dead)'}
-              {isPresident && ' - President'}
-              {isChancellor && ' - Chancellor'}
+            <li key={p.id} className={`flex items-center ${deadStyles}`}>
+              <span className="flex-1">{p.name}</span>
+              {isPresident && (
+                <span className="ml-2 text-blue-600" title="President">
+                  👑
+                </span>
+              )}
+              {isChancellor && (
+                <span className="ml-2 text-green-600" title="Chancellor">
+                  ⭐
+                </span>
+              )}
             </li>
           );
         })}
