@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { GameStateContext } from './GameStateContext.js';
+import { GameStateContext } from './GameStateContext.jsx';
 import Portrait from './components/Portrait.jsx';
 
 /**

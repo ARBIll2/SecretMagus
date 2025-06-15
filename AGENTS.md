@@ -24,7 +24,7 @@ This is not a visual-heavy game. The priority is correctness, clarity, and smoot
 - `App.jsx` – Root component
 - `Lobby.jsx` – Join/Create room, name entry
 - `Game.jsx` – Main game UI (per player)
-- `GameStateContext.js` – React context for shared state
+- `GameStateContext.jsx` – React context for shared state
 
 ### `/server`
 - `index.js` – Main express + socket.io server

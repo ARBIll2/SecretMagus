@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { GameStateContext } from './GameStateContext.js';
+import { GameStateContext } from './GameStateContext.jsx';
 
 /**
  * Full-screen overlay shown when the game ends.

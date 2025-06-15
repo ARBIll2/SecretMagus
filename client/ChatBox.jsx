@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
-import { GameStateContext } from './GameStateContext.js';
+import { GameStateContext } from './GameStateContext.jsx';
 
 export default function ChatBox() {
   const { chatLog, sendChat, gameState } = useContext(GameStateContext);
