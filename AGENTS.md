@@ -227,30 +227,6 @@ Codex agents and contributors must ensure every gameplay feature aligns with **R
 
 Before merging any change, verify the checklist above and update tests to cover new logic.
 
----
-
-## 📊 May 2025 Progress Evaluation
-
-Feature | Status | Notes
---- | --- | ---
-Room creation & join flow | ✅ | Rooms can be created and joined from the lobby
-Role assignment | ✅ | Roles assigned on game start with correct knowledge share
-Initial President randomization | ✅ | First Presidential Candidate selected randomly
-Game phases (nominate → vote → policy) | ✅ | Auto policy results broadcast and core flow works
-Vote counting | ✅ | Majority check counts only alive players
-Policy deck handling (draw/discard/enact) | ✅ | Deck reshuffles the discard pile when needed
-Fascist powers | ✅ | Investigate, Special Election, Policy Peek, Execution and Veto implemented
-Win condition checks | ✅ | All victory conditions evaluated in the engine
-Game state broadcast & sync | Partial | Core events sent via socket but some state changes are not emitted
-UI reactivity | Partial | Basic board component added; nomination and vote results shown but styling minimal
-Player list display | ✅ | PlayerList component shows seating order with President and Chancellor markers
-Socket message handling | ✅ | Client and server handle defined message types
-Rules compliance (RULES.md) | Partial | Most rules enforced; disconnecting players are treated as executions
-Automated tests | Partial | Coverage expanded with voting and victory tests; further power tests needed
-
-- Identified blockers to reach playtest:
-- Improve phase-specific UI
-- Expand automated test coverage for rule enforcement
 
 ## 📊 June 2025 Progress Evaluation
 
