@@ -1,6 +1,18 @@
 import React, { useState, useContext } from 'react';
 import { GameStateContext } from './GameStateContext.js';
 import { MESSAGE_TYPES } from '../shared/messages.js';
+import Portrait from './components/Portrait.jsx';
+
+const availablePortraits = [
+  'owl',
+  'fox',
+  'robot',
+  'pirate',
+  'alien',
+  'witch',
+  'cat',
+  'deer',
+];
 
 /**
  * Lobby view for entering a name and room code.
@@ -10,13 +22,15 @@ export default function Lobby() {
   const { socket, gameState, playerId, leaveRoom } = useContext(GameStateContext);
   const [name, setName] = useState('');
   const [roomCode, setRoomCode] = useState('');
+  const [portrait, setPortrait] = useState(availablePortraits[0]);
 
   const createRoom = () => {
-    if (socket) socket.emit(MESSAGE_TYPES.CREATE_ROOM, { name, playerId });
+    if (socket) socket.emit(MESSAGE_TYPES.CREATE_ROOM, { name, playerId, portrait });
   };
 
   const joinRoom = () => {
-    if (socket) socket.emit(MESSAGE_TYPES.JOIN_ROOM, { name, roomCode, playerId });
+    if (socket)
+      socket.emit(MESSAGE_TYPES.JOIN_ROOM, { name, roomCode, playerId, portrait });
   };
 
   const startGame = () => {
@@ -37,6 +51,19 @@ export default function Lobby() {
   return (
     <div>
       <h1>Secret Hitler</h1>
+      <div className="grid grid-cols-4 gap-2 mb-2">
+        {availablePortraits.map((pId) => (
+          <div
+            key={pId}
+            onClick={() => setPortrait(pId)}
+            className={
+              'cursor-pointer border ' + (portrait === pId ? 'border-blue-500' : 'border-transparent')
+            }
+          >
+            <Portrait portraitId={pId} variant="neutral" />
+          </div>
+        ))}
+      </div>
       {joined && <p>Room Code: {gameState.code}</p>}
       <input
         type="text"

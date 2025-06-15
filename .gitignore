@@ -1,4 +1,7 @@
 node_modules/
 .env
 *.log
-public/
+public/*
+!public/assets/
+public/assets/*
+!public/assets/portraits/
