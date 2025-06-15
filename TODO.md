@@ -58,6 +58,8 @@
   state.
 - Implemented `ActionLog` component to display public history entries.
 - Created unit tests for the tip engine.
+- Expanded React UI with NominationPanel, VotePanel, PolicyHand,
+  PowerPanel and VetoPrompt components for better phase-based reactivity.
 
 ### Previous wave
 - Set up Jest with Babel configuration and added unit tests for `assignRoles`,
@@ -68,7 +70,6 @@
   and Hitler election victory condition.
 
 ## Next Steps
-- Expand React UI components for each gameplay phase (policy draw, powers, prompts) to improve reactivity.
 - Expand unit tests for remaining presidential powers and edge cases. Integrate tests with CI.
 - Improve UI styling for board and player list.
 - Consider adding a confirmation or restriction when players attempt to leave

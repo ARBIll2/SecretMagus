@@ -1,19 +1,20 @@
 import React, { useContext } from 'react';
 import { GameStateContext } from './GameStateContext.js';
-import { MESSAGE_TYPES } from '../shared/messages.js';
-import { PHASES } from '../shared/constants.js';
 import Board from './Board.jsx';
 import PlayerList from './PlayerList.jsx';
 import ActionLog from './ActionLog.jsx';
 import Tips from './Tips.jsx';
+import NominationPanel from './NominationPanel.jsx';
+import VotePanel from './VotePanel.jsx';
+import PolicyHand from './PolicyHand.jsx';
+import VetoPrompt from './VetoPrompt.jsx';
+import PowerPanel from './PowerPanel.jsx';
 
 /**
  * Main game UI. Renders based on current game state from context.
- * TODO: Add nomination, voting, policy selection, and powers UI.
  */
 export default function Game() {
   const {
-    socket,
     gameState,
     role,
     roleInfo,
@@ -30,47 +31,12 @@ export default function Game() {
 
   const roomCode = gameState?.code || gameState?.roomCode;
 
-  const castVote = (vote) => {
-    if (socket && roomCode) {
-      socket.emit(MESSAGE_TYPES.CAST_VOTE, { roomCode, vote });
-    }
-  };
-
-  const choosePolicy = (policy) => {
-    if (socket && roomCode) {
-      socket.emit(MESSAGE_TYPES.POLICY_CHOICE, { roomCode, policy });
-    }
-  };
-
-  const requestVeto = () => {
-    if (socket && roomCode) {
-      socket.emit(MESSAGE_TYPES.POLICY_CHOICE, { roomCode, veto: true });
-    }
-  };
-
-  const vetoDecision = (accept) => {
-    if (socket && roomCode) {
-      socket.emit(MESSAGE_TYPES.VETO_DECISION, { roomCode, accept });
-    }
-  };
-
   const exitRoom = () => {
     if (gameState?.code) {
       leaveRoom(gameState.code);
     }
   };
 
-  const nominate = (nomineeId) => {
-    if (socket && roomCode) {
-      socket.emit(MESSAGE_TYPES.NOMINATE_CHANCELLOR, { roomCode, nomineeId });
-    }
-  };
-
-  const usePower = (targetId) => {
-    if (socket && roomCode) {
-      socket.emit(MESSAGE_TYPES.USE_POWER, { roomCode, action: { targetId } });
-    }
-  };
 
   return (
     <div>
@@ -117,67 +83,11 @@ export default function Game() {
         </p>
       )}
 
-      {!gameState.gameOver && gameState?.game?.phase === PHASES.NOMINATE && (
-        playerId === gameState.game.players[gameState.game.presidentIndex]?.id ? (
-          <div>
-            <h3>Nominate Chancellor</h3>
-            {gameState.game.players
-              .filter((p) => p.alive && p.id !== playerId)
-              .map((p) => (
-                <button key={p.id} onClick={() => nominate(p.id)}>
-                  {p.name}
-                </button>
-              ))}
-          </div>
-        ) : (
-          <p>Waiting for president to nominate a chancellor...</p>
-        )
-      )}
-
-      {!gameState.gameOver &&
-        gameState?.game?.phase === PHASES.VOTE &&
-        me?.alive && (
-          <div>
-            <h3>Cast Your Vote</h3>
-            <button onClick={() => castVote(true)}>Ja!</button>
-            <button onClick={() => castVote(false)}>Nein!</button>
-          </div>
-        )}
-
-      {policyPrompt && !gameState.gameOver && (
-        <div>
-          <h3>Select Policy</h3>
-          {policyPrompt.policies.map((p, idx) => (
-            <button key={idx} onClick={() => choosePolicy(p)}>
-              {p}
-            </button>
-          ))}
-          {policyPrompt.canVeto && (
-            <button onClick={requestVeto}>Request Veto</button>
-          )}
-        </div>
-      )}
-
-      {vetoPrompt && !gameState.gameOver && (
-        <div>
-          <h3>Approve Veto?</h3>
-          <button onClick={() => vetoDecision(true)}>Yes</button>
-          <button onClick={() => vetoDecision(false)}>No</button>
-        </div>
-      )}
-
-      {powerPrompt && !gameState.gameOver && (
-        <div>
-          <h3>Use Power: {powerPrompt.power}</h3>
-          {powerPrompt.players.map((p) => (
-            <button key={p.id} onClick={() => usePower(p.id)}>
-              {powerPrompt.power === 'INVESTIGATE'
-                ? `Investigate ${p.name}`
-                : `Select ${p.name}`}
-            </button>
-          ))}
-        </div>
-      )}
+      {!gameState.gameOver && <NominationPanel />}
+      {!gameState.gameOver && <VotePanel />}
+      {policyPrompt && !gameState.gameOver && <PolicyHand />}
+      {vetoPrompt && !gameState.gameOver && <VetoPrompt />}
+      {powerPrompt && !gameState.gameOver && <PowerPanel />}
 
       {powerResult && powerResult.power === 'INVESTIGATE' && (
         <div>
@@ -225,7 +135,6 @@ export default function Game() {
       <ActionLog />
 
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
-      {/* TODO: replace with proper components for each game phase */}
     </div>
   );
 }

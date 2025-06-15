@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { GameStateContext } from './GameStateContext.js';
-import { PHASES } from '../shared/constants.js';
 
 /**
  * Displays the current board state: enacted policies and election tracker.
