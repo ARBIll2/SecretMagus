@@ -7,6 +7,7 @@ const roomManager = require('./roomManager.js');
 const gameEngine = require('./gameEngine.js');
 const { MESSAGE_TYPES } = require('../shared/messages.js');
 const { PHASES, POWERS, ROLES } = require('../shared/constants.js');
+const { prepareChat } = require('./chat.js');
 
 /**
  * Initializes express and socket.io server.
@@ -376,6 +377,22 @@ io.on('connection', (socket) => {
       }
         emitRoomUpdate(roomCode, room);
     }
+  });
+
+  socket.on(MESSAGE_TYPES.CHAT_SEND, ({ roomCode, message, to }) => {
+    const room = roomManager.getRoomByCode(roomCode);
+    if (!room || !room.game) return;
+    const playerId = getPlayerId(room, socket.id);
+    if (!playerId) return;
+    const result = prepareChat(room, playerId, message, to);
+    if (!result) return;
+    result.socketIds.forEach((sid) => {
+      io.to(sid).emit(MESSAGE_TYPES.CHAT_RECEIVE, {
+        from: result.entry.from,
+        message: result.entry.message,
+        visibility: result.visibility,
+      });
+    });
   });
 
   // NOTE: add new game event handlers as features expand

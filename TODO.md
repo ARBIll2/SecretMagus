@@ -22,8 +22,22 @@
 - Add proper routing or state machine to manage phases
 
 ## 🕳️ Missing / Skipped Logic
+=======
+- Animation and polish for policy handling on the client
+
+## 🔨 In Progress
+- Additional UX cues for executed players and game over screens
 - Replace debug JSON dump in Game.jsx with a dedicated developer toggle
 
+
+## ✅ Completed (continued)
+- Basic phase state machine added for switching between Lobby and Game views
+
+## ✅ Completed (continued)
+- Basic phase state machine added for switching between Lobby and Game views
+
+## 🔨 In Progress
+- Additional UX cues for executed players and game over screens
 
 ## 🧠 Needs Design Decision
 - Long-term room persistence for multi-server deployment
@@ -31,3 +45,6 @@
 ## ⏳ Low Priority / Post-MVP
 - Enhanced tips engine tracking past actions for better suggestions
 - Animation and polish for policy handling on the client
+
+## ⚠️ Blockers / Edge Cases
+- Developer tools should be gated so hidden information isn't shown during normal play

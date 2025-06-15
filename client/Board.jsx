@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { GameStateContext } from './GameStateContext.js';
 
 /**
@@ -10,6 +10,27 @@ export default function Board() {
   const liberal = game.enactedPolicies?.liberal || 0;
   const fascist = game.enactedPolicies?.fascist || 0;
   const tracker = game.failedElections || 0;
+
+  const prevLiberal = useRef(liberal);
+  const prevFascist = useRef(fascist);
+  const [flashLiberal, setFlashLiberal] = useState(false);
+  const [flashFascist, setFlashFascist] = useState(false);
+
+  useEffect(() => {
+    if (liberal > prevLiberal.current) {
+      setFlashLiberal(true);
+      setTimeout(() => setFlashLiberal(false), 800);
+    }
+    prevLiberal.current = liberal;
+  }, [liberal]);
+
+  useEffect(() => {
+    if (fascist > prevFascist.current) {
+      setFlashFascist(true);
+      setTimeout(() => setFlashFascist(false), 800);
+    }
+    prevFascist.current = fascist;
+  }, [fascist]);
   const president = game.players?.[game.presidentIndex];
   const chancellor =
     game.chancellorIndex != null ? game.players?.[game.chancellorIndex] : null;
@@ -24,7 +45,9 @@ export default function Board() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className={`w-6 h-6 border ${i < liberal ? 'bg-blue-500' : 'bg-gray-200'}`}
+              className={`w-6 h-6 border ${i < liberal ? 'bg-blue-500' : 'bg-gray-200'} ${
+                flashLiberal && i === liberal - 1 ? 'animate-pulse' : ''
+              }`}
             ></div>
           ))}
         </div>
@@ -36,7 +59,9 @@ export default function Board() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className={`w-6 h-6 border ${i < fascist ? 'bg-red-500' : 'bg-gray-200'}`}
+              className={`w-6 h-6 border ${i < fascist ? 'bg-red-500' : 'bg-gray-200'} ${
+                flashFascist && i === fascist - 1 ? 'animate-pulse' : ''
+              }`}
             ></div>
           ))}
         </div>
