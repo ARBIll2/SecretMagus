@@ -7,8 +7,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as roomManager from './roomManager.js';
 import * as gameEngine from './gameEngine.js';
-import { MESSAGE_TYPES } from '../shared/messages.js';
-import { PHASES, POWERS, ROLES } from '../shared/constants.js';
+import { MESSAGE_TYPES } from './messages.js';
+import { PHASES, POWERS, ROLES } from './constants.js';
 import { prepareChat } from './chat.js';
 
 const __filename = fileURLToPath(import.meta.url);
