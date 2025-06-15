@@ -45,11 +45,31 @@ io.on('connection', (socket) => {
   socket.on(MESSAGE_TYPES.LEAVE_ROOM, ({ roomCode }) => {
     const room = roomManager.getRoomByCode(roomCode);
     if (!room) return;
+
     socket.leave(roomCode);
-    roomManager.removePlayer(roomCode, socket.id);
-    const updated = roomManager.getRoomByCode(roomCode);
-    if (updated) {
-      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, updated);
+
+    if (room.game && room.game.phase !== PHASES.GAME_OVER) {
+      const outcome = gameEngine.handleDisconnect(room, socket.id);
+      logEvent(roomCode, 'PLAYER_LEAVE', socket.id);
+
+      if (outcome) {
+        if (outcome.autoResult) {
+          io.to(roomCode).emit(MESSAGE_TYPES.POLICY_RESULT, outcome.autoResult);
+          if (outcome.autoResult.gameOver) {
+            io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.autoResult.gameOver);
+          }
+        } else if (outcome.gameOver) {
+          io.to(roomCode).emit(MESSAGE_TYPES.GAME_OVER, outcome.gameOver);
+        }
+      }
+
+      io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, room);
+    } else {
+      roomManager.removePlayer(roomCode, socket.id);
+      const updated = roomManager.getRoomByCode(roomCode);
+      if (updated) {
+        io.to(roomCode).emit(MESSAGE_TYPES.ROOM_UPDATE, updated);
+      }
     }
   });
 
