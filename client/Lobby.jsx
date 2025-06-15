@@ -12,11 +12,11 @@ export default function Lobby() {
   const [roomCode, setRoomCode] = useState('');
 
   const createRoom = () => {
-    if (socket) socket.emit(MESSAGE_TYPES.CREATE_ROOM, { name });
+    if (socket) socket.emit(MESSAGE_TYPES.CREATE_ROOM, { name, playerId });
   };
 
   const joinRoom = () => {
-    if (socket) socket.emit(MESSAGE_TYPES.JOIN_ROOM, { name, roomCode });
+    if (socket) socket.emit(MESSAGE_TYPES.JOIN_ROOM, { name, roomCode, playerId });
   };
 
   const startGame = () => {
