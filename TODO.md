@@ -14,6 +14,7 @@
 - Confirmation prompt when a player attempts to leave mid-game
 - Expand test coverage for remaining edge cases and powers
 - Improved styling for the board and player list
+- Additional UX cues for executed players and game over screens
 
 ## 🔨 In Progress
 - Polish layout for main game UI components
@@ -24,7 +25,6 @@
 
 ## 🕳️ Missing / Skipped Logic
 - Reconnection support for players who refresh or temporarily lose connection
-- Additional UX cues for executed players and game over screens
 
 ## ⏳ Low Priority / Post-MVP
 - Enhanced tips engine tracking past actions for better suggestions
