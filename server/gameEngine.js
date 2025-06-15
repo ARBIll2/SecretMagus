@@ -2,8 +2,8 @@
  * Game engine responsible for handling Secret Hitler logic.
  * All logic should be server-side and authoritative.
  */
-const { ROLES, PHASES, POWERS, FASCIST_POWERS } = require('../shared/constants.js');
-const { assignRoles, shuffleDeck } = require('../shared/utils.js');
+import { ROLES, PHASES, POWERS, FASCIST_POWERS } from '../shared/constants.js';
+import { assignRoles, shuffleDeck } from '../shared/utils.js';
 
 const BASE_POLICY_DECK = [
   ...Array(6).fill('LIBERAL'),
@@ -593,7 +593,7 @@ function handleDisconnect(room, playerId) {
   return null;
 }
 
-module.exports = {
+export {
   startGame,
   handleVote,
   processPolicy,

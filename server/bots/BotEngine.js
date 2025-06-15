@@ -1,6 +1,4 @@
-"use strict";
-
-const { ROLES, POWERS } = require("../../shared/constants.js");
+import { ROLES, POWERS } from "../../shared/constants.js";
 
 /**
  * Creates a basic bot agent for Secret Hitler.
@@ -144,4 +142,5 @@ function clamp(min, max, val) {
   return Math.max(min, Math.min(max, val));
 }
 
-module.exports = { createBot };
+export { createBot };
+

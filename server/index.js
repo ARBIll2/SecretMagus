@@ -1,14 +1,18 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
-const { randomUUID } = require('crypto');
-const path = require('path');
-const roomManager = require('./roomManager.js');
-const gameEngine = require('./gameEngine.js');
-const { MESSAGE_TYPES } = require('../shared/messages.js');
-const { PHASES, POWERS, ROLES } = require('../shared/constants.js');
-const { prepareChat } = require('./chat.js');
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import { randomUUID } from 'crypto';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as roomManager from './roomManager.js';
+import * as gameEngine from './gameEngine.js';
+import { MESSAGE_TYPES } from '../shared/messages.js';
+import { PHASES, POWERS, ROLES } from '../shared/constants.js';
+import { prepareChat } from './chat.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Initializes express and socket.io server.
@@ -444,3 +448,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+

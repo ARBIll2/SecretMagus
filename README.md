@@ -7,6 +7,10 @@ This project lays the groundwork for a multiplayer implementation of **Secret Hi
 - **Backend**: Node.js + socket.io
 - **Shared**: Common constants and utilities across client and server
 
+> **Note**
+> The `/client` and `/shared` folders use ECMAScript Modules. Always import with
+> ESM `import` syntax and include the `.js` extension for local paths.
+
 ## Getting Started
 1. Install dependencies in both the client and server:
    ```bash

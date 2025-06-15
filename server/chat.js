@@ -1,6 +1,4 @@
-const { PHASES } = require('../shared/constants.js');
-
-function sanitizeMessage(str) {
+export function sanitizeMessage(str) {
   if (!str) return '';
   return String(str).replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
 }
@@ -28,7 +26,7 @@ function determineRecipients(room, to) {
   return recipients;
 }
 
-function prepareChat(room, fromId, text, to = 'global') {
+export function prepareChat(room, fromId, text, to = 'global') {
   if (!room || !room.game) return null;
   const fromPlayer = room.players.find(p => p.id === fromId);
   if (!fromPlayer) return null;
@@ -41,4 +39,3 @@ function prepareChat(room, fromId, text, to = 'global') {
   return { entry, socketIds, visibility };
 }
 
-module.exports = { sanitizeMessage, prepareChat };

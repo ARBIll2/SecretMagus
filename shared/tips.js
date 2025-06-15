@@ -6,9 +6,9 @@
  * @param {string} role Player's secret role (LIBERAL/FASCIST/HITLER)
  * @returns {string[]} Array of suggestion strings
  */
-const { PHASES, ROLES, POWERS } = require('./constants.js');
+import { PHASES, ROLES, POWERS } from './constants.js';
 
-function getTipsForPlayer(game, playerId, role) {
+export function getTipsForPlayer(game, playerId, role) {
   if (!game) return [];
   const tips = [];
   const meIdx = game.players.findIndex((p) => p.id === playerId);
@@ -83,4 +83,4 @@ function getTipsForPlayer(game, playerId, role) {
   return tips;
 }
 
-module.exports = { getTipsForPlayer };
+

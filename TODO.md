@@ -16,10 +16,12 @@
 - Reconnection support for players who refresh or temporarily lose connection
 - Polish layout for main game UI components
 - Build step for bundling client scripts and global styles
+- Convert `shared/messages.js` to ESM
 
 ## 🔨 In Progress
 - Additional UX cues for executed players and game over screens
 - Add proper routing or state machine to manage phases
+- ❗ Audit backend for consistent module format
 
 ## 🕳️ Missing / Skipped Logic
 =======
