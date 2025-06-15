@@ -11,6 +11,7 @@
 - Action log and basic AI tips
 - Jest test suite covering utilities, core game logic, and tips engine
 - Room updates broadcast after every state change
+- Confirmation prompt when a player attempts to leave mid-game
 - Expand test coverage for remaining edge cases and powers
 - Improved styling for the board and player list
 - Confirmation prompt when leaving a game in progress

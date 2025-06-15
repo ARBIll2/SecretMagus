@@ -115,6 +115,15 @@ export default function GameStateProvider({ children }) {
   }, []);
 
   const leaveRoom = (roomCode) => {
+    if (
+      gameState?.game &&
+      gameState.game.phase !== PHASES.GAME_OVER &&
+      !window.confirm(
+        'Leaving now counts as a resignation and may end the game. Are you sure?'
+      )
+    ) {
+      return;
+    }
     if (socket) {
       socket.emit(MESSAGE_TYPES.LEAVE_ROOM, { roomCode });
     }
