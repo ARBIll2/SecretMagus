@@ -121,6 +121,7 @@ function startGame(room) {
     discardPile: [],
     enactedPolicies: { liberal: 0, fascist: 0 },
     history: [],
+    chatLog: [],
     settings: { playerCount: room.players.length },
     lastPresidentId: null,
     lastChancellorId: null,

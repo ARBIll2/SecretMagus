@@ -15,6 +15,10 @@
 - Improved styling for the board and player list
 - Reconnection support for players who refresh or temporarily lose connection
 - Polish layout for main game UI components
+- Developer debug toggle for viewing game state
+
+## ✅ Completed (continued)
+- Basic phase state machine added for switching between Lobby and Game views
 
 ## ✅ Completed (continued)
 - Basic phase state machine added for switching between Lobby and Game views
@@ -22,14 +26,12 @@
 ## 🔨 In Progress
 - Additional UX cues for executed players and game over screens
 
-## 🕳️ Missing / Skipped Logic
-- Replace debug JSON dump in Game.jsx with a dedicated developer toggle
-- Build step for bundling client scripts and global styles
-
-
 ## 🧠 Needs Design Decision
 - Long-term room persistence for multi-server deployment
 
 ## ⏳ Low Priority / Post-MVP
 - Enhanced tips engine tracking past actions for better suggestions
 - Animation and polish for policy handling on the client
+
+## ⚠️ Blockers / Edge Cases
+- Developer tools should be gated so hidden information isn't shown during normal play
