@@ -12,10 +12,12 @@
 - Jest test suite covering utilities, core game logic, and tips engine
 - Room updates broadcast after every state change
 - Confirmation prompt when a player attempts to leave mid-game
+- Expand test coverage for remaining edge cases and powers
+- Improved styling for the board and player list
 
 ## 🔨 In Progress
-- Expand test coverage for remaining edge cases and powers
-- Improve styling for the board and player list
+- Polish layout for main game UI components
+
 
 ## 🧠 Needs Design Decision
 - Long-term room persistence for multi-server deployment
