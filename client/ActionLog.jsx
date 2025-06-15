@@ -36,9 +36,11 @@ export default function ActionLog() {
   };
 
   return (
-    <div>
-      <h3>Action Log</h3>
-      <ul>{history.map(renderEntry)}</ul>
+    <div className="bg-white p-4 rounded shadow mb-4 max-h-48 overflow-y-auto">
+      <h3 className="text-lg font-bold mb-2">Action Log</h3>
+      <ul className="list-disc list-inside space-y-1 text-sm">
+        {history.map(renderEntry)}
+      </ul>
     </div>
   );
 }

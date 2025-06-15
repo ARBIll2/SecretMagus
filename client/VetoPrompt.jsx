@@ -16,10 +16,22 @@ export default function VetoPrompt() {
   };
 
   return (
-    <div>
-      <h3>Approve Veto?</h3>
-      <button onClick={() => decide(true)}>Yes</button>
-      <button onClick={() => decide(false)}>No</button>
+    <div className="bg-white p-4 rounded shadow mb-4 text-center">
+      <h3 className="text-lg font-bold mb-2">Approve Veto?</h3>
+      <div className="space-x-2">
+        <button
+          onClick={() => decide(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+        >
+          Yes
+        </button>
+        <button
+          onClick={() => decide(false)}
+          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+        >
+          No
+        </button>
+      </div>
     </div>
   );
 }

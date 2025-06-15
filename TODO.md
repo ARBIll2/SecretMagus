@@ -17,12 +17,13 @@
 - Reconnection support for players who refresh or temporarily lose connection
 - Confirmation prompt when leaving a game in progress
 - Additional UX cues for executed players and game over screens
+- Polish layout for main game UI components
 
 ## 🔨 In Progress
-- Polish layout for main game UI components
 
 ## 🔜 Next Tasks
 - Additional UX cues for executed players and game over screens
+- Replace debug JSON dump in Game.jsx with dedicated developer toggle
 
 
 ## 🧠 Needs Design Decision
