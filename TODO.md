@@ -13,13 +13,13 @@
 - Room updates broadcast after every state change
 - Expand test coverage for remaining edge cases and powers
 - Improved styling for the board and player list
+- Confirmation prompt when leaving a game in progress
 
 ## 🔨 In Progress
 - Polish layout for main game UI components
 
 
 ## 🧠 Needs Design Decision
-- Confirmation or restrictions when players attempt to leave mid-game
 - Long-term room persistence for multi-server deployment
 
 ## 🕳️ Missing / Skipped Logic

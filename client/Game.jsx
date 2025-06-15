@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { GameStateContext } from './GameStateContext.js';
+import { PHASES } from '../shared/constants.js';
 import Board from './Board.jsx';
 import PlayerList from './PlayerList.jsx';
 import ActionLog from './ActionLog.jsx';
@@ -32,6 +33,15 @@ export default function Game() {
   const roomCode = gameState?.code || gameState?.roomCode;
 
   const exitRoom = () => {
+    if (
+      gameState?.game &&
+      gameState.game.phase !== PHASES.GAME_OVER &&
+      !window.confirm(
+        'Leaving will mark you as executed and may end the game. Are you sure?'
+      )
+    ) {
+      return;
+    }
     if (gameState?.code) {
       leaveRoom(gameState.code);
     }
