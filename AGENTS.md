@@ -251,7 +251,7 @@ Socket message handling | ✅ | Client and server support defined message types
 Rules compliance (RULES.md) | ✅ | Auto policy from the election tracker now ignores powers
 
 - Current blockers:
-  - Expand test coverage for powers and win conditions
+- Current blockers:
   - Improve overall styling and usability for playtesting
 
 ## 📊 July 2025 Progress Evaluation

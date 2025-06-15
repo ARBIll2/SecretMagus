@@ -6,6 +6,8 @@ const {
   handlePolicyChoice,
   handleVetoDecision,
   handleDisconnect,
+  handlePower,
+  processPolicy,
 } = require('../server/gameEngine.js');
 const { ROLE_DISTRIBUTION, PHASES, ROLES } = require('../shared/constants.js');
 
@@ -192,5 +194,68 @@ describe('policy phase and powers', () => {
     expect(state.failedElections).toBe(1);
     expect(state.policyHand).toBeNull();
     expect(state.phase).toBe(PHASES.NOMINATE);
+  });
+
+  test('investigate loyalty cannot target same player twice', () => {
+    const room = createRoom(7);
+    startGame(room);
+    const state = room.game;
+    state.presidentIndex = 0;
+    state.pendingPower = 'INVESTIGATE';
+    state.powerPresidentId = state.players[0].id;
+    state.phase = PHASES.POWER;
+
+    const targetId = state.players[1].id;
+    const res1 = handlePower(room, state.players[0].id, { targetId });
+    expect(res1).toEqual({ power: 'INVESTIGATE', targetId, membership: expect.any(String) });
+    expect(state.phase).toBe(PHASES.NOMINATE);
+
+    state.pendingPower = 'INVESTIGATE';
+    state.powerPresidentId = state.players[0].id;
+    state.phase = PHASES.POWER;
+    const res2 = handlePower(room, state.players[0].id, { targetId });
+    expect(res2).toBeNull();
+  });
+
+  test('special election sets presidency and returns after session', () => {
+    const room = createRoom(7);
+    startGame(room);
+    const state = room.game;
+    const originalIndex = 0;
+    state.presidentIndex = originalIndex;
+    state.pendingPower = 'SPECIAL_ELECTION';
+    state.powerPresidentId = state.players[originalIndex].id;
+    state.phase = PHASES.POWER;
+
+    const targetIdx = 3;
+    const targetId = state.players[targetIdx].id;
+    const out = handlePower(room, state.players[originalIndex].id, { targetId });
+    expect(out).toEqual({ power: 'SPECIAL_ELECTION', targetId });
+    expect(state.presidentIndex).toBe(targetIdx);
+    const returnIdx = (originalIndex + 1) % state.players.length;
+    expect(state.specialElectionReturnIndex).toBe(returnIdx);
+    expect(state.phase).toBe(PHASES.NOMINATE);
+
+    processPolicy(room, 'LIBERAL');
+    expect(state.presidentIndex).toBe(returnIdx);
+    expect(state.specialElectionReturnIndex).toBeNull();
+  });
+
+  test('execution of Hitler ends the game immediately', () => {
+    const room = createRoom(7);
+    startGame(room);
+    const state = room.game;
+    state.presidentIndex = 0;
+    const hitler = state.players[2];
+    hitler.role = ROLES.HITLER;
+
+    state.pendingPower = 'EXECUTION';
+    state.powerPresidentId = state.players[0].id;
+    state.phase = PHASES.POWER;
+
+    const result = handlePower(room, state.players[0].id, { targetId: hitler.id });
+    expect(result.power).toBe('EXECUTION');
+    expect(result.gameOver).toEqual({ winner: 'LIBERALS', reason: 'HITLER_EXECUTED' });
+    expect(state.phase).toBe(PHASES.GAME_OVER);
   });
 });
