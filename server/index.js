@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const { randomUUID } = require('crypto');
+const path = require('path');
 const roomManager = require('./roomManager.js');
 const gameEngine = require('./gameEngine.js');
 const { MESSAGE_TYPES } = require('../shared/messages.js');
@@ -13,6 +14,7 @@ const { prepareChat } = require('./chat.js');
  * Handles basic connection events.
  */
 const app = express();
+app.use(express.static(path.join(__dirname, '..', 'public')));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -429,6 +431,10 @@ io.on('connection', (socket) => {
       }
     });
   });
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

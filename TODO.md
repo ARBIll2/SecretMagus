@@ -15,6 +15,14 @@
 - Improved styling for the board and player list
 - Reconnection support for players who refresh or temporarily lose connection
 - Polish layout for main game UI components
+- Build step for bundling client scripts and global styles
+
+## 🔨 In Progress
+- Additional UX cues for executed players and game over screens
+- Add proper routing or state machine to manage phases
+
+## 🕳️ Missing / Skipped Logic
+=======
 - Animation and polish for policy handling on the client
 
 ## 🔨 In Progress
