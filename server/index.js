@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const cors = require('cors');
 const { randomUUID } = require('crypto');
 const path = require('path');
 const roomManager = require('./roomManager.js');
@@ -14,11 +15,12 @@ const { prepareChat } = require('./chat.js');
  * Handles basic connection events.
  */
 const app = express();
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*'}));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: process.env.CORS_ORIGIN || '*',
   },
 });
 
