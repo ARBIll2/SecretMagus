@@ -34,7 +34,7 @@ export default function GameStateProvider({ children }) {
   };
 
   useEffect(() => {
-    const sock = io();
+    const sock = io(import.meta.env.VITE_SOCKET_URL || undefined);
     setSocket(sock);
 
     sock.on('connect', () => {
