@@ -3,14 +3,14 @@
  */
 
 // Player roles
-const ROLES = Object.freeze({
+export const ROLES = Object.freeze({
   LIBERAL: 'LIBERAL',
   FASCIST: 'FASCIST',
   HITLER: 'HITLER',
 });
 
 // Game phases
-const PHASES = Object.freeze({
+export const PHASES = Object.freeze({
   NOMINATE: 'NOMINATE',
   VOTE: 'VOTE',
   POLICY: 'POLICY',
@@ -19,7 +19,7 @@ const PHASES = Object.freeze({
 });
 
 // Presidential powers
-const POWERS = Object.freeze({
+export const POWERS = Object.freeze({
   NONE: 'NONE',
   INVESTIGATE: 'INVESTIGATE',
   SPECIAL_ELECTION: 'SPECIAL_ELECTION',
@@ -28,7 +28,7 @@ const POWERS = Object.freeze({
 });
 
 // Available portrait IDs
-const AVAILABLE_PORTRAITS = [
+export const AVAILABLE_PORTRAITS = [
   'owl',
   'fox',
   'robot',
@@ -41,7 +41,7 @@ const AVAILABLE_PORTRAITS = [
 
 // Mapping of fascist policy count to powers based on player count
 // Index 0 corresponds to the first enacted fascist policy, etc.
-const FASCIST_POWERS = {
+export const FASCIST_POWERS = {
   5: [
     POWERS.NONE,
     POWERS.NONE,
@@ -87,7 +87,7 @@ const FASCIST_POWERS = {
 };
 
 // Mapping of player count to roles
-const ROLE_DISTRIBUTION = {
+export const ROLE_DISTRIBUTION = {
   5: { liberals: 3, fascists: 1, hitler: 1 },
   6: { liberals: 4, fascists: 1, hitler: 1 },
   7: { liberals: 4, fascists: 2, hitler: 1 },
@@ -96,11 +96,4 @@ const ROLE_DISTRIBUTION = {
   10: { liberals: 6, fascists: 3, hitler: 1 },
 };
 
-module.exports = {
-  ROLES,
-  PHASES,
-  POWERS,
-  FASCIST_POWERS,
-  ROLE_DISTRIBUTION,
-  AVAILABLE_PORTRAITS,
-};
+

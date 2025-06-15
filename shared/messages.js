@@ -2,7 +2,7 @@
  * Socket message type constants for client/server communication.
  */
 
-const MESSAGE_TYPES = Object.freeze({
+export const MESSAGE_TYPES = Object.freeze({
   CREATE_ROOM: 'CREATE_ROOM',
   JOIN_ROOM: 'JOIN_ROOM',
   LEAVE_ROOM: 'LEAVE_ROOM',
@@ -31,6 +31,3 @@ const MESSAGE_TYPES = Object.freeze({
   CHAT_RECEIVE: 'chat:receive',
 });
 
-module.exports = {
-  MESSAGE_TYPES,
-};

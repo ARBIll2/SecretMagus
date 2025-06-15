@@ -2,7 +2,7 @@
  * Simple in-memory room manager.
  * NOTE: replace with persistent storage if scaling to multiple servers.
  */
-const { generateRoomCode } = require('../shared/utils.js');
+import { generateRoomCode } from '../shared/utils.js';
 
 const rooms = {};
 
@@ -78,7 +78,7 @@ function listRooms() {
   return Object.keys(rooms);
 }
 
-module.exports = {
+export {
   createRoom,
   joinRoom,
   removePlayer,

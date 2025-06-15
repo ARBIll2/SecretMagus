@@ -1,7 +1,5 @@
-"use strict";
-
-const { ROLES, AVAILABLE_PORTRAITS } = require("../../shared/constants.js");
-const { createBot } = require("./BotEngine.js");
+import { ROLES, AVAILABLE_PORTRAITS } from "../../shared/constants.js";
+import { createBot } from "./BotEngine.js";
 
 const botsByRoom = {};
 
@@ -35,7 +33,7 @@ function spawnForSolo(room, playerNames) {
   }
 }
 
-module.exports = {
+export {
   addBotToRoom,
   removeBots,
   getBots,
